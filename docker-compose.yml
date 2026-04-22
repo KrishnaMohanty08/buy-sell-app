@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aurvm_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: BAZAAR
+      POSTGRES_PASSWORD: aurvm_secret
+      POSTGRES_DB: aurvm_db
+    ports:
+      - "5432:5432"             # expose to host for local GUI tools
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: aurvm_server
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://BAZAAR:aurvm_secret@postgres:5432/aurvm_db
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server:/app           # hot reload in dev
+      - /app/node_modules       # keep container's node_modules isolated
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: aurvm_client
+    restart: unless-stopped
+    depends_on:
+      - server
+    environment:
+      VITE_API_URL: http://localhost:4000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
