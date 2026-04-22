@@ -78,6 +78,71 @@ const EyeIcon = ({ open }) =>
     </svg>
   );
 
+/* ─── FormInputWithError — react-hook-form integrated field ─── */
+export function FormInputWithError({
+  label,
+  type = "text",
+  placeholder,
+  registerProps,  
+  error,          
+  icon,           
+}) {
+  const [focused, setFocused] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const isPassword = type === "password";
+  const inputType = isPassword ? (show ? "text" : "password") : type;
+  const hasError = !!error;
+
+  return (
+    <div style={{ marginBottom: "1rem" }}>
+      {label && <label style={S.label}>{label}</label>}
+      <div style={S.wrap}>
+        <input
+          {...registerProps}
+          type={inputType}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            ...S.input,
+            borderColor: hasError ? "#F27430" : (focused ? "#F2B949" : "rgba(242,185,73,0.22)"),
+            background: focused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
+          }}
+        />
+
+        {/* Right adornment — eye toggle for password, icon for others */}
+        {isPassword ? (
+          <button
+            type="button"
+            style={S.eyeBtn}
+            onClick={() => setShow((v) => !v)}
+            tabIndex={-1}
+            aria-label={show ? "Hide password" : "Show password"}
+          >
+            <EyeIcon open={show} />
+          </button>
+        ) : icon === "email" ? (
+          <span style={S.iconRight}>
+            <EmailIcon />
+          </span>
+        ) : null}
+      </div>
+      {error && (
+        <p style={{
+          fontSize: "0.72rem",
+          color: "#F27430",
+          marginTop: "0.3rem",
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          {error.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
 /* ─── FormField — generic text / email / password input ─── */
 export function FormField({
   label,
@@ -133,6 +198,64 @@ export function FormField({
           </span>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+/* ─── FormSelectWithError — react-hook-form integrated select ─── */
+export function FormSelectWithError({
+  label,
+  registerProps,  // {...register("fieldName", {...rules})}
+  error,          // errors.fieldName
+  options,        // [{ value, label }, ...]
+}) {
+  const [focused, setFocused] = useState(false);
+  const hasError = !!error;
+
+  return (
+    <div style={{ marginBottom: "1rem" }}>
+      {label && <label style={S.label}>{label}</label>}
+      <div style={S.wrap}>
+        <select
+          {...registerProps}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            ...S.input,
+            padding: "0 2.5rem 0 14px",
+            cursor: "pointer",
+            background: focused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
+            borderColor: hasError ? "#F27430" : (focused ? "#F2B949" : "rgba(242,185,73,0.22)"),
+            appearance: "none",
+            WebkitAppearance: "none",
+          }}
+        >
+          <option value="" disabled style={{ color: "#888", background: "#221809" }}>
+            Select an option
+          </option>
+          {options.map(({ value: v, label: l }) => (
+            <option key={v} value={v} style={{ color: "#fff", background: "#221809" }}>
+              {l}
+            </option>
+          ))}
+        </select>
+        {/* chevron */}
+        <span style={{ ...S.iconRight, pointerEvents: "none" }}>
+          <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M1 1l5 5 5-5" />
+          </svg>
+        </span>
+      </div>
+      {error && (
+        <p style={{
+          fontSize: "0.72rem",
+          color: "#F27430",
+          marginTop: "0.3rem",
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          {error.message}
+        </p>
+      )}
     </div>
   );
 }

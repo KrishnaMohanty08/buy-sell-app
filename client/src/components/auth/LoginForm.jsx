@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import {
+  FormInputWithError,
   OrDivider,
   SocialButtons,
   SubmitButton,
@@ -32,34 +33,33 @@ export default function LoginForm({ onSwitchToRegister }) {
       <h3 style={styles.title}>Welcome back</h3>
       <p style={styles.sub}>Sign in to your BAZAAR account</p>
 
-      <label style={styles.label}>Email</label>
-      <input
-        {...register("email", {
+      <FormInputWithError
+        label="Email"
+        type="email"
+        placeholder="you@example.com"
+        registerProps={register("email", {
           required: "Email is required",
           pattern: {
             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
             message: "Invalid email address",
           },
         })}
-        type="email"
-        placeholder="you@example.com"
-        style={{ ...styles.input, ...(errors.email ? { borderColor: "#F27430" } : {}) }}
+        error={errors.email}
         autoComplete="email"
+        icon="email"
       />
-      {errors.email && <p style={styles.err}>{errors.email.message}</p>}
 
-      <label style={styles.label}>Password</label>
-      <input
-        {...register("password", {
+      <FormInputWithError
+        label="Password"
+        type="password"
+        placeholder="••••••••"
+        registerProps={register("password", {
           required: "Password is required",
           minLength: { value: 6, message: "Min 6 characters" },
         })}
-        type="password"
-        placeholder="••••••••"
-        style={{ ...styles.input, ...(errors.password ? { borderColor: "#F27430" } : {}) }}
+        error={errors.password}
         autoComplete="current-password"
       />
-      {errors.password && <p style={styles.err}>{errors.password.message}</p>}
 
       <p style={styles.forgot}>Forgot password?</p>
 
@@ -95,40 +95,7 @@ const styles = {
     color: "rgba(255,255,255,0.52)",
     marginBottom: "1.5rem",
   },
-  label: {
-    display: "block",
-    fontSize: "0.7rem",
-    fontWeight: 500,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    color: "rgba(255,255,255,0.55)",
-    marginBottom: 6,
-    fontFamily: "'DM Sans', sans-serif",
-  },
-  input: {
-    width: "100%",
-    height: 44,
-    padding: "0 14px",
-    background: "rgba(255,255,255,0.04)",
-    borderWidth: "0.5px",
-    borderStyle: "solid",
-    borderColor: "rgba(242,185,73,0.22)",
-    borderRadius: 10,
-    color: "#fff",
-    fontSize: "0.88rem",
-    fontFamily: "'DM Sans', sans-serif",
-    outline: "none",
-    marginBottom: "1rem",
-    boxSizing: "border-box",
-    transition: "border-color 0.2s, background 0.2s",
-  },
-  err: {
-    fontSize: "0.72rem",
-    color: "#F27430",
-    fontFamily: "'DM Sans', sans-serif",
-    marginTop: "-0.6rem",
-    marginBottom: "0.6rem",
-  },
+
   forgot: {
     fontSize: "0.75rem",
     color: "#EDD377",
