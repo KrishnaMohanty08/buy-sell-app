@@ -1,0 +1,191 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id          String   @id @default(uuid())
+
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  fullName    String
+  phone       String
+
+  street      String
+  city        String
+  state       String
+  postalCode  String
+  country     String
+
+  isDefault   Boolean  @default(false)
+
+  // ✅ ADD THIS
+  orders      Order[]
+
+  createdAt   DateTime @default(now())
+}
+
+model Listing {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  condition   Condition
+  isSold      Boolean     @default(false)
+
+  seller      User        @relation(fields: [sellerId], references: [id])
+  sellerId    String
+
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+
+  images      Image[]
+  reviews     Review[]
+
+  // ✅ ADD THESE
+  orders      Order[]
+  cartItems   CartItem[]
+
+  createdAt   DateTime    @default(now())
+}
+
+model Order {
+  id          String      @id @default(uuid())
+
+  buyer       User        @relation(fields: [buyerId], references: [id])
+  buyerId     String
+
+  listing     Listing     @relation(fields: [listingId], references: [id])
+  listingId   String
+
+  address     Address     @relation(fields: [addressId], references: [id])
+  addressId   String
+
+  totalPrice  Float
+  status      OrderStatus @default(PENDING)
+
+  payment     Payment?
+
+  createdAt   DateTime    @default(now())
+}
+
+model User {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  password    String
+  role        Role      @default(USER)
+
+  listings    Listing[]
+  orders      Order[]
+  reviews     Review[]
+
+  cart        Cart?
+  addresses   Address[]
+
+  createdAt   DateTime  @default(now())
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  cartId    String
+
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  listingId String
+
+  quantity  Int      @default(1)
+
+  createdAt DateTime @default(now())
+
+  @@unique([cartId, listingId]) // prevents duplicate items
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique   // one cart per user
+
+  items     CartItem[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  rating      Int      // 1–5
+  comment     String?
+
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  listing     Listing  @relation(fields: [listingId], references: [id])
+  listingId   String
+
+  createdAt   DateTime @default(now())
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  amount    Float
+  status    PaymentStatus
+  method    String   // e.g. UPI, CARD
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique
+
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  url       String
+
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  listingId String
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     @unique
+
+  listings  Listing[]
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  USED
+}
+
+enum Role {
+  USER
+  ADMIN
+}

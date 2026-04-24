@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: aurvm_secret
       POSTGRES_DB: aurvm_db
     ports:
-      - "5432:5432"             # expose to host for local GUI tools
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -25,9 +25,10 @@ services:
       PORT: 4000
     ports:
       - "4000:4000"
+      - "5555:5555"
     volumes:
-      - ./server:/app           # hot reload in dev
-      - /app/node_modules       # keep container's node_modules isolated
+      - ./server:/app
+      - /app/node_modules
 
   client:
     build:

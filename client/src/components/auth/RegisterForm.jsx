@@ -27,7 +27,6 @@ export default function RegisterForm({ onSwitchToLogin }) {
   const onSubmit = async (data) => {
     try {
       // TODO: connect to POST /api/auth/register
-      console.log("Register payload →", data);
       // const response = await fetch('/api/auth/register', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },

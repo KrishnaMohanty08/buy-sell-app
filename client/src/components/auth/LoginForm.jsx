@@ -16,13 +16,11 @@ export default function LoginForm({ onSwitchToRegister }) {
 
   const onSubmit = async (data) => {
     try {
-      // TODO: connect to POST /api/auth/login
-      console.log("Login payload →", data);
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
+      const response =await fetch('/api/auth/login',{
+        method :'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringofy(data),
+      });
     } catch (error) {
       console.error("Login failed:", error);
     }
