@@ -5,6 +5,7 @@ import {
   SocialButtons,
   SubmitButton,
 } from "./AuthFields";
+import { login } from "../../api/auth.js";
 
 export default function LoginForm({ onSwitchToRegister }) {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -15,13 +16,10 @@ export default function LoginForm({ onSwitchToRegister }) {
   });
 
   const onSubmit = async (data) => {
-    try {
-      const response =await fetch('/api/auth/login',{
-        method :'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringofy(data),
-      });
-    } catch (error) {
+    try{
+      const result = await login(data.email,data.password);
+      console.log("Login successful:", result);
+    }catch(error){
       console.error("Login failed:", error);
     }
   };

@@ -6,6 +6,7 @@ import {
   SocialButtons,
   SubmitButton,
 } from "./AuthFields";
+import { register } from "../../api/auth.js";
 
 const ACCOUNT_TYPES = [
   { value: "buyer", label: "Buy items" },
@@ -20,18 +21,13 @@ export default function RegisterForm({ onSwitchToLogin }) {
       lastName: "",
       email: "",
       password: "",
-      accountType: "",
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      // TODO: connect to POST /api/auth/register
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
+      const result = await register(data.firstName, data.lastName, data.email, data.password);
+      console.log("Registration successful:", result);
     } catch (error) {
       console.error("Registration failed:", error);
     }
@@ -82,13 +78,6 @@ export default function RegisterForm({ onSwitchToLogin }) {
             minLength: { value: 6, message: "Min 6 chars" }
           })}
           error={errors.password}
-        />
-
-        <FormSelectWithError
-          label="Account Type"
-          registerProps={register("accountType", { required: "Account type required" })}
-          error={errors.accountType}
-          options={ACCOUNT_TYPES}
         />
 
         <p style={styles.terms}>By registering, you agree to our <span style={styles.link}>Terms</span> and <span style={styles.link}>Privacy</span></p>
