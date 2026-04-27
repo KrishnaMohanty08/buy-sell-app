@@ -28,7 +28,7 @@ export default function LoginForm({ onSwitchToRegister }) {
     <>
       <h3 style={styles.title}>Welcome back</h3>
       <p style={styles.sub}>Sign in to your BAZAAR account</p>
-
+      <form onSubmit={handleSubmit(onSubmit)}>
       <FormInputWithError
         label="Email"
         type="email"
@@ -58,7 +58,7 @@ export default function LoginForm({ onSwitchToRegister }) {
       />
 
       <p style={styles.forgot}>Forgot password?</p>
-
+      </form>
       <SubmitButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
         {isSubmitting ? "Signing in..." : "Sign in"}
       </SubmitButton>

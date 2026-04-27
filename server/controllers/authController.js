@@ -1,21 +1,25 @@
-import bcrypt from "bcrypt"
-import prisma from "../prisma/client"
-import generateToken from "../utils/jwt"
+import bcrypt from "bcryptjs"
+import prisma from "../prisma/client.js"
+import generateToken from "../utils/jwt.js"
 
-export const register =async  (req, res) => {
-    try{
-        const {email,password}=req.body
-        const hashPassword=await bcrypt.hash(password,10);
+export const register = async (req, res) => {
+    try {
+        const { firstName, lastName, email, password } = req.body;  
+        const hashPassword = await bcrypt.hash(password, 10);
 
-        const user=await prisma.user.create({
-            data:{
+        const user = await prisma.user.create({
+            data: {
+                firstName,   
+                lastName,    
                 email,
-                password:hashPassword,
+                password: hashPassword,
             }
         });
-        res.json({message:"user registered",user});
-    }catch(err){
-        res.status(500).json({error:err.message});
+
+        const token = generateToken(user);  
+        res.json({ message: "user registered", token, user });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 

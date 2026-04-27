@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   FormInputWithError,
@@ -6,7 +7,7 @@ import {
   SocialButtons,
   SubmitButton,
 } from "./AuthFields";
-import { register } from "../../api/auth.js";
+import { register as registerUser} from "../../api/auth.js";
 
 const ACCOUNT_TYPES = [
   { value: "buyer", label: "Buy items" },
@@ -23,13 +24,15 @@ export default function RegisterForm({ onSwitchToLogin }) {
       password: "",
     },
   });
+  // const [serverError, setServerError] = useState();
 
   const onSubmit = async (data) => {
     try {
-      const result = await register(data.firstName, data.lastName, data.email, data.password);
+      const result = await registerUser(data.firstName, data.lastName, data.email, data.password);
       console.log("Registration successful:", result);
     } catch (error) {
       console.error("Registration failed:", error);
+      // setServerError(error.message);
     }
   };
 
@@ -39,6 +42,8 @@ export default function RegisterForm({ onSwitchToLogin }) {
     <>
       <h3 style={styles.title}>Create Account</h3>
       <p style={styles.sub}>Join BAZAAR to start trading</p>
+
+      {/* {serverError && <p style={{color: "#ff6b6b", fontSize: "0.85rem", marginBottom: "1rem"}}>{serverError}</p>} */}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormInputWithError
@@ -82,7 +87,7 @@ export default function RegisterForm({ onSwitchToLogin }) {
 
         <p style={styles.terms}>By registering, you agree to our <span style={styles.link}>Terms</span> and <span style={styles.link}>Privacy</span></p>
 
-        <SubmitButton onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+        <SubmitButton type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Registering..." : "Register"}
         </SubmitButton>
 

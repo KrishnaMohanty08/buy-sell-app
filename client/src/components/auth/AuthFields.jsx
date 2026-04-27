@@ -85,7 +85,8 @@ export function FormInputWithError({
   placeholder,
   registerProps,  
   error,          
-  icon,           
+  icon,
+  autoComplete = "off",
 }) {
   const [focused, setFocused] = useState(false);
   const [show, setShow] = useState(false);

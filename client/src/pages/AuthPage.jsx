@@ -40,7 +40,7 @@ export default function AuthPage() {
 
             {/* Forms */}
             {tab === "login"
-              ? <LoginForm    onSwitchToRegister={() => setTab("register")} />
+              ? <LoginForm   onSwitchToRegister={() => setTab("register")} />
               : <RegisterForm onSwitchToLogin={()    => setTab("login")} />
             }
 
