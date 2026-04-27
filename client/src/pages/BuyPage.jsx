@@ -1,4 +1,19 @@
 import { useState } from "react";
+import {
+  ArrowUpRight,
+  BadgeCheck,
+  Gem,
+  Heart,
+  MessageSquare,
+  Package,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  ShoppingCart,
+  Star,
+  Watch,
+  Zap,
+} from "lucide-react";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
 
@@ -7,8 +22,7 @@ const PRODUCT = {
   category: "Collectibles",
   price: 84500, oldPrice: 120000,
   condition: "Like New", negotiable: true,
-  emoji: "⌚",
-  thumbs: ["⌚","🔍","📦","🪙"],
+  thumbs: [Watch, Search, Package, Gem],
   seller: { name: "AuraCollects", avatar: "A", rating: 4.9, sales: 312, responseTime: "~2 hrs" },
   rating: 4.8, reviewCount: 86, soldCount: 43,
 };
@@ -37,6 +51,7 @@ export default function BuyPage() {
   const [cartAdded, setCartAdded] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [offerOpen, setOfferOpen] = useState(false);
+  const ActiveThumb = PRODUCT.thumbs[activeThumb];
 
   const handleAddCart = () => setCartAdded(true);
 
@@ -58,12 +73,12 @@ export default function BuyPage() {
             <div className="gallery">
               <div className="gallery-main">
                 <span className="gallery-main-badge">30% OFF</span>
-                <span style={{fontSize:"7rem"}}>{PRODUCT.thumbs[activeThumb]}</span>
+                <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",height:"7rem",width:"7rem"}}><ActiveThumb size={84} strokeWidth={1.7} /></span>
                 <div
                   className={`gallery-main-wish ${wished ? "wished" : ""}`}
                   onClick={() => setWished(p => !p)}
                 >
-                  {wished ? "❤️" : "🤍"}
+                  <Heart size={18} strokeWidth={2} fill={wished ? "currentColor" : "none"} />
                 </div>
               </div>
               <div className="gallery-thumbs">
@@ -73,7 +88,7 @@ export default function BuyPage() {
                     className={`gallery-thumb ${activeThumb === i ? "active" : ""}`}
                     onClick={() => setActiveThumb(i)}
                   >
-                    {t}
+                    {(() => { const ThumbIcon = t; return <ThumbIcon size={22} strokeWidth={2} />; })()}
                   </div>
                 ))}
               </div>
@@ -85,7 +100,7 @@ export default function BuyPage() {
                 <div className="info-category">{PRODUCT.category}</div>
                 <div className="info-top-row">
                   <h1 className="info-title">{PRODUCT.title}</h1>
-                  <button className="info-share">⬆ Share</button>
+                  <button className="info-share"><ArrowUpRight size={15} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px", marginRight:"0.3rem"}} />Share</button>
                 </div>
               </div>
 
@@ -93,7 +108,7 @@ export default function BuyPage() {
               <div className="rating-row">
                 <div className="stars">
                   {[1,2,3,4,5].map(s => (
-                    <span key={s} className="star">{s <= Math.round(PRODUCT.rating) ? "⭐" : "☆"}</span>
+                    <Star key={s} size={14} strokeWidth={2} fill={s <= Math.round(PRODUCT.rating) ? "currentColor" : "none"} className="star" />
                   ))}
                 </div>
                 <span className="rating-num">{PRODUCT.rating}</span>
@@ -130,13 +145,13 @@ export default function BuyPage() {
 
               {/* CTAs */}
               <div className="cta-stack">
-                <button className="btn-buy">⚡ Buy Now</button>
+                <button className="btn-buy"><Zap size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Buy Now</button>
                 <button className={`btn-cart ${cartAdded ? "added" : ""}`} onClick={handleAddCart}>
-                  {cartAdded ? "✓ Added to Cart" : "🛒 Add to Cart"}
+                  {cartAdded ? <><BadgeCheck size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Added to Cart</> : <><ShoppingCart size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Add to Cart</>}
                 </button>
                 {PRODUCT.negotiable && (
                   <button className="btn-offer" onClick={() => setOfferOpen(true)}>
-                    💬 Make an Offer
+                    <MessageSquare size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Make an Offer
                   </button>
                 )}
               </div>
@@ -144,15 +159,15 @@ export default function BuyPage() {
               {/* Trust */}
               <div className="trust-row">
                 <div className="trust-item">
-                  <div className="trust-icon">🛡️</div>
+                  <div className="trust-icon"><ShieldCheck size={22} strokeWidth={2} /></div>
                   <div className="trust-label">Buyer<br/>Protection</div>
                 </div>
                 <div className="trust-item">
-                  <div className="trust-icon">↩️</div>
+                  <div className="trust-icon"><RotateCcw size={22} strokeWidth={2} /></div>
                   <div className="trust-label">Easy<br/>Returns</div>
                 </div>
                 <div className="trust-item">
-                  <div className="trust-icon">✅</div>
+                  <div className="trust-icon"><BadgeCheck size={22} strokeWidth={2} /></div>
                   <div className="trust-label">Verified<br/>Seller</div>
                 </div>
               </div>
@@ -168,7 +183,7 @@ export default function BuyPage() {
                     <strong>{PRODUCT.seller.rating}★</strong> · {PRODUCT.seller.sales} sales · responds in {PRODUCT.seller.responseTime}
                   </div>
                 </div>
-                <button className="btn-msg">Message</button>
+                <button className="btn-msg"><MessageSquare size={15} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px", marginRight:"0.3rem"}} />Message</button>
               </div>
             </div>
           </div>
@@ -216,7 +231,7 @@ export default function BuyPage() {
                   <div>
                     <div className="review-big-num">{PRODUCT.rating}</div>
                     <div className="review-big-stars">
-                      {[1,2,3,4,5].map(s => <span key={s} style={{fontSize:"0.85rem"}}>⭐</span>)}
+                      {[1,2,3,4,5].map(s => <Star key={s} size={14} strokeWidth={2} fill="currentColor" style={{marginRight:"0.1rem"}} />)}
                     </div>
                     <div className="review-big-count">{PRODUCT.reviewCount} reviews</div>
                   </div>
@@ -240,7 +255,7 @@ export default function BuyPage() {
                         <span className="reviewer-date">{r.date}</span>
                       </div>
                       <div className="review-stars">
-                        {[1,2,3,4,5].map(s => <span key={s} style={{fontSize:"0.8rem"}}>{s<=r.rating?"⭐":"☆"}</span>)}
+                        {[1,2,3,4,5].map(s => <Star key={s} size={13} strokeWidth={2} fill={s<=r.rating ? "currentColor" : "none"} />)}
                       </div>
                       <p className="review-body">{r.body}</p>
                     </div>

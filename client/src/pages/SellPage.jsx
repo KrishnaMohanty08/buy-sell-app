@@ -1,16 +1,36 @@
 import { useState } from "react";
+import {
+  BadgeDollarSign,
+  Camera,
+  FileText,
+  FolderUp,
+  Gauge,
+  Headphones,
+  Lamp,
+  PartyPopper,
+  Rocket,
+  ShoppingBag,
+  Smartphone,
+  Sparkles,
+  ThumbsUp,
+  UploadCloud,
+  Wrench,
+} from "lucide-react";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
+import { apiFetch } from "../utils/api";
 
 const CATEGORIES = ["Electronics","Fashion","Home & Living","Books","Sports","Collectibles","Automotive","Music","Art","Other"];
 const CONDITIONS = [
-  {label:"New",     emoji:"✨", desc:"Never used"},
-  {label:"Like New",emoji:"💎", desc:"Barely used"},
-  {label:"Good",    emoji:"👍", desc:"Minor wear"},
-  {label:"Fair",    emoji:"🔧", desc:"Visible wear"},
+  {label:"New", icon: Sparkles, desc:"Never used"},
+  {label:"Like New", icon: BadgeDollarSign, desc:"Barely used"},
+  {label:"Good", icon: ThumbsUp, desc:"Minor wear"},
+  {label:"Fair", icon: Wrench, desc:"Visible wear"},
+  {label:"Just Working", icon: Gauge, desc:"working"},
+
 ];
 
-const MOCK_IMAGES = ["📱","🎧","👜","💡"];
+const MOCK_IMAGES = [Smartphone, Headphones, ShoppingBag, Lamp];
 
 export default function SellPage() {
   const [step, setStep] = useState(0);
@@ -37,7 +57,7 @@ export default function SellPage() {
       <div className="sell-page">
         <div className="sell-inner">
           <div className="success-state">
-            <div className="success-icon">🎉</div>
+            <div className="success-icon"><PartyPopper size={34} strokeWidth={1.8} /></div>
             <h2 className="success-title">Listing Live!</h2>
             <p className="success-sub">Your item is now live on AURUM. You'll be notified when someone shows interest.</p>
             <div style={{display:"flex",gap:"0.8rem",justifyContent:"center",flexWrap:"wrap"}}>
@@ -83,7 +103,7 @@ export default function SellPage() {
                 <>
                   <div className="form-card">
                     <div className="form-card-header">
-                      <span>📝</span>
+                      <FileText size={18} strokeWidth={2} />
                       <h3>Basic Details</h3>
                     </div>
                     <div className="form-body">
@@ -117,7 +137,7 @@ export default function SellPage() {
                               className={`cond-option ${condition === c.label ? "selected" : ""}`}
                               onClick={() => setCondition(c.label)}
                             >
-                              <div className="cond-emoji">{c.emoji}</div>
+                              <div className="cond-emoji"><c.icon size={20} strokeWidth={2} /></div>
                               <div className="cond-label">{c.label}</div>
                             </div>
                           ))}
@@ -150,7 +170,7 @@ export default function SellPage() {
               {step === 1 && (
                 <div className="form-card">
                   <div className="form-card-header">
-                    <span>💰</span>
+                    <BadgeDollarSign size={18} strokeWidth={2} />
                     <h3>Pricing</h3>
                   </div>
                   <div className="form-body">
@@ -207,19 +227,19 @@ export default function SellPage() {
               {step === 2 && (
                 <div className="form-card">
                   <div className="form-card-header">
-                    <span>📸</span>
+                    <Camera size={18} strokeWidth={2} />
                     <h3>Photos</h3>
                   </div>
                   <div className="form-body">
                     <div className="upload-zone">
-                      <div className="upload-icon">📂</div>
+                      <div className="upload-icon"><FolderUp size={28} strokeWidth={1.8} /></div>
                       <div className="upload-text"><strong>Click to upload</strong> or drag & drop</div>
                       <div className="upload-sub">PNG, JPG, WEBP up to 8MB — max 8 images</div>
                     </div>
                     <div className="image-previews">
                       {images.map((img, i) => (
                         <div className={`preview-thumb ${i === 0 ? "primary" : ""}`} key={i}>
-                          {MOCK_IMAGES[i % MOCK_IMAGES.length]}
+                          {(() => { const ThumbIcon = MOCK_IMAGES[i % MOCK_IMAGES.length]; return <ThumbIcon size={26} strokeWidth={1.8} />; })()}
                           <button className="thumb-remove" onClick={() => setImages(p => p.filter((_, j) => j !== i))}>✕</button>
                         </div>
                       ))}
@@ -233,7 +253,7 @@ export default function SellPage() {
               {step === 3 && (
                 <div className="form-card">
                   <div className="form-card-header">
-                    <span>✅</span>
+                    <UploadCloud size={18} strokeWidth={2} />
                     <h3>Review & Publish</h3>
                   </div>
                   <div className="form-body">
@@ -260,7 +280,7 @@ export default function SellPage() {
                 {step > 0 && <button className="btn-ghost" onClick={() => setStep(p => p - 1)}>← Back</button>}
                 {step < 3
                   ? <button className="btn-primary" onClick={() => setStep(p => p + 1)}>Continue →</button>
-                  : <button className="btn-primary" onClick={() => setDone(true)}>🚀 Publish Listing</button>
+                  : <button className="btn-primary" onClick={() => setDone(true)}><Rocket size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Publish Listing</button>
                 }
               </div>
             </div>
@@ -270,7 +290,7 @@ export default function SellPage() {
               <div className="preview-panel">
                 <div className="preview-title">Live Preview</div>
                 <div className="preview-card">
-                  <div className="preview-img">📱</div>
+                  <div className="preview-img"><Smartphone size={44} strokeWidth={1.8} /></div>
                   <div className="preview-body">
                     <div className="preview-cat">Electronics</div>
                     <div className="preview-name">Sony WH-1000XM5 Headphones</div>

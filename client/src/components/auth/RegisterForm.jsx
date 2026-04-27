@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import {
   FormInputWithError,
-  FormSelectWithError,
   OrDivider,
   SocialButtons,
   SubmitButton,
@@ -16,6 +15,7 @@ const ACCOUNT_TYPES = [
 ];
 
 export default function RegisterForm({ onSwitchToLogin }) {
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
       firstName: "",
@@ -30,6 +30,7 @@ export default function RegisterForm({ onSwitchToLogin }) {
     try {
       const result = await registerUser(data.firstName, data.lastName, data.email, data.password);
       console.log("Registration successful:", result);
+      navigate("/explore");
     } catch (error) {
       console.error("Registration failed:", error);
       // setServerError(error.message);

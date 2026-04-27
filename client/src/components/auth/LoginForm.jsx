@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import {
   FormInputWithError,
   OrDivider,
@@ -8,6 +9,7 @@ import {
 import { login } from "../../api/auth.js";
 
 export default function LoginForm({ onSwitchToRegister }) {
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
       email: "",
@@ -19,6 +21,7 @@ export default function LoginForm({ onSwitchToRegister }) {
     try{
       const result = await login(data.email,data.password);
       console.log("Login successful:", result);
+      navigate("/explore");        
     }catch(error){
       console.error("Login failed:", error);
     }

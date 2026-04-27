@@ -38,7 +38,7 @@ export default function Navbar({ cartCount = 3 }) {
         <ul className="nav-links">
           {NAV_LINKS.map((item) => (
             <li key={item.label}>
-              <button className="nav-link" onClick={()=>{item.href}}>{item.label}</button>
+              <button className="nav-link" onClick={() => navigate(item.href)}>{item.label}</button>
             </li>
           ))}
         </ul>
@@ -96,14 +96,17 @@ export default function Navbar({ cartCount = 3 }) {
             fontFamily: "'DM Sans', sans-serif",
           }}
         >
-          {NAV_LINKS.map((label) => (
+          {NAV_LINKS.map((item) => (
             <button
-              key={label}
+              key={item.label}
               className="nav-link"
               style={{ textAlign: "left", fontSize: "0.9rem" }}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                navigate(item.href);
+                setMenuOpen(false);
+              }}
             >
-              {label}
+              {item.label}
             </button>
           ))}
         </div>
