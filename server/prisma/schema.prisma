@@ -39,8 +39,11 @@ model Listing {
   id          String      @id @default(uuid())
   title       String
   description String
+  brand       String?
   price       Float
   condition   Condition
+  negotiable  Boolean     @default(false)
+  tags        Json?
   isSold      Boolean     @default(false)
 
   seller      User        @relation(fields: [sellerId], references: [id])
