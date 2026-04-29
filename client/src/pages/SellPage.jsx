@@ -5,9 +5,11 @@ import {
   BadgeDollarSign,
   Camera,
   FileText,
+  Film,
   FolderUp,
   Gauge,
   Headphones,
+  Image,
   Lamp,
   PartyPopper,
   Rocket,
@@ -30,6 +32,10 @@ const CONDITIONS = [
   { label: "Fair", icon: Wrench, desc: "Visible wear" },
   { label: "Just Working", icon: Gauge, desc: "working" },
 ];
+
+// Temporary placeholder icons for image previews
+// TODO: Replace with actual image upload and preview handling
+const MOCK_IMAGES = [Camera, Image, Film];
 
 // Step-specific validation rules
 const STEP_FIELDS = {
