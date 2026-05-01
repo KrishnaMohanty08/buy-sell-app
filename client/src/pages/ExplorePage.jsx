@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BookOpen,
   Boxes,
@@ -18,8 +18,10 @@ import {
   Sparkles,
   Tag,
   Watch,
-  Headphones
+  Headphones,
+  Loader
 } from "lucide-react";
+import { getListings } from "../api/listing";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
 
@@ -35,16 +37,7 @@ const CATEGORIES = [
 
 const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
-const PRODUCTS = [
-  { id:1, title:"Vintage Chronograph Watch", category:"Collectibles", condition:"Like New", price:84500, oldPrice:120000, icon: Watch, badge:"hot" },
-  { id:3, title:"Leather Crossbody Bag", category:"Fashion", condition:"Like New", price:3800, icon: ShoppingBag, badge:"new" },
-  { id:4, title:"Minimalist Floor Lamp", category:"Home & Living", condition:"Good", price:2200, icon: Lamp },
-  { id:5, title:"First Edition Hardcover Set", category:"Books", condition:"Good", price:1600, icon: BookOpen, badge:"hot" },
-  { id:6, title:"Canon EOS R6 Camera", category:"Electronics", condition:"Like New", price:89000, oldPrice:109000, icon: Camera, badge:"sale" },
-  { id:7, title:"Marble Chess Set", category:"Collectibles", condition:"New", price:4500, icon: Gem, badge:"new" },
-  { id:8, title:"Yoga Mat Pro Bundle", category:"Sports", condition:"New", price:1899, icon: Dumbbell, badge:"new" },
-  { id:9, title:"Teak Dining Chair (Set of 4)", category:"Home & Living", condition:"Good", price:12000, oldPrice:18000, icon: Package, badge:"sale" },
-];
+
 
 export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -52,13 +45,66 @@ export default function ExplorePage() {
   const [wished, setWished] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const [activePage, setActivePage] = useState(1);
-  const [activeFilters, setActiveFilters] = useState(["Under ₹50,000"]);
+  const [activeFilters, setActiveFilters] = useState([]);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalListings, setTotalListings] = useState(0);
+
+  // Fetch listings whenever filters change
+  useEffect(() => {
+    const fetchListings = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const filters = {
+          category: activeCategory !== "All" ? activeCategory : undefined,
+          condition: activeConditions.length > 0 ? activeConditions[0] : undefined,
+          minPrice: minPrice ? parseInt(minPrice) : undefined,
+          maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
+          search: searchQuery || undefined,
+          sortBy: sortBy === "newest" ? "newest" : sortBy === "price_low" ? "price" : "price",
+          sortOrder: sortBy === "price_high" ? "desc" : "asc",
+          page: activePage,
+          limit: 12,
+        };
+
+        // Remove undefined values
+        Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
+
+        const response = await getListings(filters);
+        setListings(response.listings || []);
+        setTotalListings(response.total || 0);
+      } catch (err) {
+        setError(err.message);
+        console.error("Failed to fetch listings:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, [activeCategory, activeConditions, minPrice, maxPrice, searchQuery, sortBy, activePage]);
 
   const toggleCondition = (c) =>
     setActiveConditions(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]);
   const toggleWish = (id) =>
     setWished(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   const removeFilter = (f) => setActiveFilters(p => p.filter(x => x !== f));
+
+  const handlePriceFilter = () => {
+    if (minPrice || maxPrice) {
+      const filterLabel = `₹${minPrice || "0"} - ₹${maxPrice || "∞"}`;
+      if (!activeFilters.includes(filterLabel)) {
+        setActiveFilters([...activeFilters, filterLabel]);
+      }
+    }
+  };
 
   return (
     <>
@@ -74,14 +120,27 @@ export default function ExplorePage() {
         <div className="search-row">
           <div className="search-wrap">
             <Search className="search-icon" size={18} strokeWidth={2} />
-            <input className="search-input" placeholder="Search products, brands, sellers..." />
+            <input 
+              className="search-input" 
+              placeholder="Search products, brands, sellers..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setActivePage(1);
+              }}
+            />
           </div>
-          <select className="sort-select">
-            <option>Sort: Newest</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Most Popular</option>
-            <option>Top Rated</option>
+          <select 
+            className="sort-select"
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setActivePage(1);
+            }}
+          >
+            <option value="newest">Sort: Newest</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
           </select>
         </div>
 
@@ -135,9 +194,28 @@ export default function ExplorePage() {
               <div className="filter-section">
                 <div className="filter-section-title">Price Range (₹)</div>
                 <div className="price-inputs">
-                  <input className="price-input" placeholder="Min" type="number" />
-                  <input className="price-input" placeholder="Max" type="number" />
+                  <input 
+                    className="price-input" 
+                    placeholder="Min" 
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                  />
+                  <input 
+                    className="price-input" 
+                    placeholder="Max" 
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                  />
                 </div>
+                <button 
+                  className="btn-card"
+                  onClick={handlePriceFilter}
+                  style={{ width: "100%", marginTop: "0.75rem" }}
+                >
+                  Apply
+                </button>
               </div>
             </div>
           </aside>
@@ -147,7 +225,7 @@ export default function ExplorePage() {
             {/* Results bar */}
             <div className="results-bar">
               <div className="results-count">
-                Showing <strong>9</strong> of <strong>2,400</strong> results
+                Showing <strong>{listings.length}</strong> of <strong>{totalListings}</strong> results
               </div>
               <div className="view-toggle">
                 <button className={`view-btn ${viewMode === "grid" ? "active" : ""}`} onClick={() => setViewMode("grid")}><LayoutGrid size={16} strokeWidth={2} /></button>
@@ -167,52 +245,70 @@ export default function ExplorePage() {
               </div>
             )}
 
+            {/* Loading state */}
+            {loading && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "300px" }}>
+                <Loader size={32} strokeWidth={2} className="spin" style={{ animation: "spin 1s linear infinite" }} />
+              </div>
+            )}
+
+            {/* Error state */}
+            {error && !loading && (
+              <div style={{ padding: "2rem", textAlign: "center", color: "#dc2626" }}>
+                <p>Error loading listings: {error}</p>
+              </div>
+            )}
+
             {/* Grid */}
-            <div className={`product-grid ${viewMode === "list" ? "list-view" : ""}`}>
-              {PRODUCTS.map((p, i) => (
-                <div className="product-card" key={p.id} style={{ animationDelay: `${i * 0.05}s` }}>
-                  <div className="card-image">
-                    {p.badge && (
-                      <span className={`card-badge badge-${p.badge}`}>
-                        {p.badge === "hot" ? <><Flame size={12} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px"}} /> Hot</> : p.badge === "sale" ? <><Tag size={12} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px"}} /> Sale</> : <><Sparkles size={12} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px"}} /> New</>}
+            {!loading && !error && (
+              <div className={`product-grid ${viewMode === "list" ? "list-view" : ""}`}>
+                {listings.length > 0 ? listings.map((listing, i) => (
+                  <div className="product-card" key={listing.id} style={{ animationDelay: `${i * 0.05}s` }}>
+                    <div className="card-image">
+                      <span className="card-emoji" style={{ fontSize: "3rem", display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                        📦
                       </span>
-                    )}
-                    <span className="card-emoji">{(() => { const ProductIcon = p.icon; return <ProductIcon size={56} strokeWidth={1.7} />; })()}</span>
-                    <div
-                      className={`card-wish ${wished.includes(p.id) ? "wished" : ""}`}
-                      onClick={() => toggleWish(p.id)}
-                    >
-                      <Heart size={18} strokeWidth={2} fill={wished.includes(p.id) ? "currentColor" : "none"} />
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="card-category">{p.category}</div>
-                    <div className="card-title">{p.title}</div>
-                    <div className="card-condition">{p.condition}</div>
-                    <div className="card-footer">
-                      <div>
-                        {p.oldPrice && <span className="card-old-price">₹{p.oldPrice.toLocaleString()}</span>}
-                        <span className="card-price">₹{p.price.toLocaleString()}</span>
+                      <div
+                        className={`card-wish ${wished.includes(listing.id) ? "wished" : ""}`}
+                        onClick={() => toggleWish(listing.id)}
+                      >
+                        <Heart size={18} strokeWidth={2} fill={wished.includes(listing.id) ? "currentColor" : "none"} />
                       </div>
-                      <button className="btn-card">Add to Cart</button>
+                    </div>
+                    <div className="card-body">
+                      <div className="card-category">{listing.category?.name || "Uncategorized"}</div>
+                      <div className="card-title">{listing.title}</div>
+                      <div className="card-condition">{listing.condition || "Good"}</div>
+                      <div className="card-footer">
+                        <div>
+                          <span className="card-price">₹{listing.price?.toLocaleString()}</span>
+                        </div>
+                        <button className="btn-card">Add to Cart</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                )) : (
+                  <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "2rem", color: "#6b7280" }}>
+                    <p>No listings found. Try adjusting your filters.</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="pagination">
-              {[1,2,3,"...",12].map((p, i) => (
-                <button
-                  key={i}
-                  className={`page-btn ${activePage === p ? "active" : ""}`}
-                  onClick={() => typeof p === "number" && setActivePage(p)}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
+            {totalListings > 12 && !loading && (
+              <div className="pagination">
+                {[1, 2, 3, 4, 5].map((p) => (
+                  <button
+                    key={p}
+                    className={`page-btn ${activePage === p ? "active" : ""}`}
+                    onClick={() => setActivePage(p)}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            )}
           </main>
         </div>
       </div>
