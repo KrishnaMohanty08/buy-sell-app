@@ -25,15 +25,15 @@ import { getListings } from "../api/listing";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
 
-const CATEGORIES = [
-  { label: "All", count: 2400, icon: Boxes },
-  { label: "Electronics", count: 480, icon: Smartphone },
-  { label: "Fashion", count: 360, icon: Shirt },
-  { label: "Home & Living", count: 290, icon: Lamp },
-  { label: "Books", count: 210, icon: BookOpen },
-  { label: "Sports", count: 170, icon: Dumbbell },
-  { label: "Collectibles", count: 95, icon: Gem },
-];
+// const CATEGORIES = [
+//   { label: "All", count: 2400, icon: Boxes },
+//   { label: "Electronics", count: 480, icon: Smartphone },
+//   { label: "Fashion", count: 360, icon: Shirt },
+//   { label: "Home & Living", count: 290, icon: Lamp },
+//   { label: "Books", count: 210, icon: BookOpen },
+//   { label: "Sports", count: 170, icon: Dumbbell },
+//   { label: "Collectibles", count: 95, icon: Gem },
+// ];
 
 const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
@@ -155,7 +155,7 @@ export default function ExplorePage() {
               </div>
 
               {/* Categories */}
-              <div className="filter-section">
+              {/* <div className="filter-section">
                 <div className="filter-section-title">Category</div>
                 <div className="cat-pills">
                   {CATEGORIES.map(cat => (
@@ -169,7 +169,7 @@ export default function ExplorePage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               {/* Condition */}
               <div className="filter-section">
