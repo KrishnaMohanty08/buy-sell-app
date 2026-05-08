@@ -15,14 +15,14 @@ The system appears to be a full-stack application with a client and server, util
 
 <!-- AI:START:STACK -->
 ### 🔧 Tech Stack
-Docker Compose, Node.js, Prisma, GitHub Actions
+Docker Compose, Node.js, Prisma, GitHub Actions, Vite
 <!-- AI:END:STACK -->
 
 ---
 
 <!-- AI:START:STRUCTURE -->
 ### 📁 Project Structure
-The project is organized into several directories, including `client` for the frontend, `server` for the backend, `.github` for GitHub Actions workflows, `scripts` for executable scripts, `templates` for document templates, and `ai-docs` for generated documentation. The `server` directory contains subdirectories for routes, controllers, middleware, and Prisma schema.
+The project is organized into several directories, including `client` for the frontend, `server` for the backend, `.github` for GitHub Actions workflows, `scripts` for executable scripts, `templates` for document templates, and `ai-docs` for generated documentation. The `server` directory contains subdirectories for routes, controllers, middleware, and Prisma schema. The `client` directory is further divided into `src` for source code, `public` for public assets, and utilizes Vite for development.
 <!-- AI:END:STRUCTURE -->
 
 ---

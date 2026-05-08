@@ -19,6 +19,8 @@ graph TD
     Secrets -->|uses|> Backend
     GitHub --> Workflow["📝 Workflow"]
     Workflow -->|triggers|> Backend
+    Backend --> AI_DevDocs_Engine["🤖 AI DevDocs Engine"]
+    AI_DevDocs_Engine -->|generates|> Docs["📄 Docs"]
 ```
 <!-- AI:END:SYSTEM_DFD -->
 
@@ -26,14 +28,15 @@ graph TD
 
 <!-- AI:START:FEATURE_DFD -->
 ### ⚙️ Feature / Module Data Flow
-_Based on: yml file added_
+_Based on: Merge branch 'main' of https://github.com/KrishnaMohanty08/buy-sell-app_
 
 ```mermaid
 graph LR
     GitHub["🐙 GitHub"] --> Workflow["📝 Workflow"]
-    Workflow -->|triggers|> Backend["⚙️ Backend API"]
-    Backend --> Scripts["📝 Scripts"]
-    Scripts -->|generate-docs|> Docs["📄 Docs Generation"]
+    Workflow -->|triggers|> AI_DevDocs_Engine["🤖 AI DevDocs Engine"]
+    AI_DevDocs_Engine -->|generates|> Docs["📄 Docs Generation"]
+    GitHub --> Backend["⚙️ Backend API"]
+    Backend -->|uses|> Secrets["🔒 Secrets"]
 ```
 <!-- AI:END:FEATURE_DFD -->
 
@@ -41,8 +44,8 @@ graph LR
 
 <!-- AI:START:CHANGE_SUMMARY -->
 ### 📝 Diagram Change Notes
-- Updated the system-level data flow to reflect the addition of workflow and its interaction with the backend API.
-- Updated the feature-level data flow to show the generation of docs using the workflow trigger.
+- No significant changes detected in the system-level data flow.
+- Updated the feature-level data flow to reflect the trigger of AI DevDocs Engine by the workflow and the generation of docs.
 <!-- AI:END:CHANGE_SUMMARY -->
 
 ---
