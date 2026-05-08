@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -13,9 +14,12 @@ import {
   Star,
   Watch,
   Zap,
+  AlertCircle,
 } from "lucide-react";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
+import { addToCart } from "../api/cart.js";
+import { isAuthenticated } from "../api/auth.js";
 
 const PRODUCT = {
   title: "Vintage Gold Chronograph Watch",
@@ -45,15 +49,52 @@ const BAR_DATA = [
 ];
 
 export default function BuyPage() {
+  const navigate = useNavigate();
   const [activeThumb, setActiveThumb] = useState(0);
   const [wished, setWished] = useState(false);
   const [qty, setQty] = useState(1);
   const [cartAdded, setCartAdded] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [offerOpen, setOfferOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const ActiveThumb = PRODUCT.thumbs[activeThumb];
 
-  const handleAddCart = () => setCartAdded(true);
+  // TODO: Replace with actual listing ID from route params or props
+  // For now using a dummy ID - update this when BuyPage is integrated with router
+  const LISTING_ID = "dummy-listing-id-replace-me";
+
+  const handleAddCart = async () => {
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      navigate("/auth");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const result = await addToCart(LISTING_ID, qty);
+      setCartAdded(true);
+      setSuccessMessage(result.message || "Item added to cart successfully!");
+      
+      // Reset success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+
+      console.log("Cart response:", result);
+    } catch (err) {
+      setError(err.message || "Failed to add item to cart");
+      setCartAdded(false);
+      console.error("Error adding to cart:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -145,9 +186,54 @@ export default function BuyPage() {
 
               {/* CTAs */}
               <div className="cta-stack">
+                {error && (
+                  <div style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                    padding: "0.75rem",
+                    backgroundColor: "rgba(239, 68, 68, 0.1)",
+                    border: "1px solid rgb(239, 68, 68)",
+                    borderRadius: "0.5rem",
+                    color: "rgb(239, 68, 68)",
+                    fontSize: "0.875rem",
+                  }}>
+                    <AlertCircle size={16} strokeWidth={2} />
+                    <span>{error}</span>
+                  </div>
+                )}
+                {successMessage && (
+                  <div style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                    padding: "0.75rem",
+                    backgroundColor: "rgba(34, 197, 94, 0.1)",
+                    border: "1px solid rgb(34, 197, 94)",
+                    borderRadius: "0.5rem",
+                    color: "rgb(34, 197, 94)",
+                    fontSize: "0.875rem",
+                  }}>
+                    <BadgeCheck size={16} strokeWidth={2} />
+                    <span>{successMessage}</span>
+                  </div>
+                )}
                 <button className="btn-buy"><Zap size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Buy Now</button>
-                <button className={`btn-cart ${cartAdded ? "added" : ""}`} onClick={handleAddCart}>
-                  {cartAdded ? <><BadgeCheck size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Added to Cart</> : <><ShoppingCart size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Add to Cart</>}
+                <button 
+                  className={`btn-cart ${cartAdded ? "added" : ""}`} 
+                  onClick={handleAddCart}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}}>⏳</span>
+                      Adding to Cart...
+                    </>
+                  ) : cartAdded ? (
+                    <><BadgeCheck size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Added to Cart</>
+                  ) : (
+                    <><ShoppingCart size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Add to Cart</>
+                  )}
                 </button>
                 {PRODUCT.negotiable && (
                   <button className="btn-offer" onClick={() => setOfferOpen(true)}>
