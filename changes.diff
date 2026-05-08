@@ -1,24 +1,42 @@
-diff --git a/.github/workflows/trigger-docs.yml b/.github/workflows/trigger-docs.yml
+diff --git a/changes.diff b/changes.diff
 new file mode 100644
-index 0000000..8a770c6
+index 0000000..77249f3
 --- /dev/null
-+++ b/.github/workflows/trigger-docs.yml
-@@ -0,0 +1,17 @@
-+name: 📡 Trigger AI Docs
++++ b/changes.diff
+@@ -0,0 +1,24 @@
++diff --git a/.github/workflows/trigger-docs.yml b/.github/workflows/trigger-docs.yml
++new file mode 100644
++index 0000000..8a770c6
++--- /dev/null
+++++ b/.github/workflows/trigger-docs.yml
++@@ -0,0 +1,17 @@
+++name: 📡 Trigger AI Docs
+++
+++on:
+++  push:
+++    branches: [main]
+++
+++jobs:
+++  trigger:
+++    runs-on: ubuntu-latest
+++    steps:
+++      - name: 🚀 Trigger AI DevDocs Engine
+++        run: |
+++          curl -X POST \
+++            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+++            -H "Accept: application/vnd.github.v3+json" \
+++            https://api.github.com/repos/KrishnaMohanty08/AI-Production-Doc/dispatches \
+++            -d '{"event_type": "generate-docs"}'
++\ No newline at end of file
+diff --git a/commit.txt b/commit.txt
+new file mode 100644
+index 0000000..5559f88
+--- /dev/null
++++ b/commit.txt
+@@ -0,0 +1,5 @@
++yml file added
 +
-+on:
-+  push:
-+    branches: [main]
-+
-+jobs:
-+  trigger:
-+    runs-on: ubuntu-latest
-+    steps:
-+      - name: 🚀 Trigger AI DevDocs Engine
-+        run: |
-+          curl -X POST \
-+            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
-+            -H "Accept: application/vnd.github.v3+json" \
-+            https://api.github.com/repos/KrishnaMohanty08/AI-Production-Doc/dispatches \
-+            -d '{"event_type": "generate-docs"}'
++Author: Sessobin <mohantykrishna57@gmail.com>
++Date: 2026-05-08
++Hash: fa0a767e7f61d087d36f4d528b5871991bfd10ef
 \ No newline at end of file
