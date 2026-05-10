@@ -1,0 +1,295 @@
+/* Profile Page Styles */
+
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(242, 185, 73, 0.1) 0%, rgba(26, 18, 8, 0.5) 100%);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(242, 185, 73, 0.2);
+}
+
+.profile-avatar-large {
+  flex-shrink: 0;
+}
+
+.profile-image-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f2b949;
+}
+
+.profile-initials-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f2b949 0%, #e8a927 100%);
+  color: #1a1208;
+  font-size: 3rem;
+  font-weight: 700;
+  border: 3px solid #f2b949;
+}
+
+.profile-info h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: #f2b949;
+}
+
+.profile-info p {
+  margin: 0;
+  color: #b8a68f;
+}
+
+.profile-email {
+  font-size: 0.95rem;
+}
+
+/* Content Sections */
+.profile-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+.profile-section {
+  padding: 2rem;
+  background: rgba(26, 18, 8, 0.3);
+  border: 1px solid rgba(242, 185, 73, 0.15);
+  border-radius: 12px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #f2b949;
+}
+
+/* Listings Grid */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.listing-card {
+  background: rgba(26, 18, 8, 0.5);
+  border: 1px solid rgba(242, 185, 73, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.listing-card:hover {
+  transform: translateY(-4px);
+  border-color: #f2b949;
+  box-shadow: 0 8px 16px rgba(242, 185, 73, 0.1);
+}
+
+.listing-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.listing-info {
+  padding: 1rem;
+}
+
+.listing-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f2b949;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listing-price {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e8a927;
+}
+
+.listing-date {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #8b7d6b;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #8b7d6b;
+}
+
+.empty-state p {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary,
+.btn-logout {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f2b949 0%, #e8a927 100%);
+  color: #1a1208;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(242, 185, 73, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(242, 185, 73, 0.15);
+  color: #f2b949;
+  border: 1px solid rgba(242, 185, 73, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(242, 185, 73, 0.25);
+  border-color: #f2b949;
+}
+
+.btn-logout {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.btn-logout:hover {
+  background: rgba(255, 107, 107, 0.3);
+  border-color: #ff6b6b;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(242, 185, 73, 0.15);
+}
+
+.profile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #f2b949;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .profile-image-large,
+  .profile-initials-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-logout {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 1rem 1rem;
+  }
+
+  .profile-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .profile-image-large,
+  .profile-initials-large {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1.2rem;
+  }
+
+  .listing-image {
+    height: 150px;
+  }
+
+  .listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}

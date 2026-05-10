@@ -17,7 +17,17 @@ export const register = async (req, res) => {
         });
 
         const token = generateToken(user);  
-        res.json({ message: "user registered", token, user });
+        res.json({ 
+            message: "user registered", 
+            token, 
+            user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                profileImage: user.profileImage
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -36,8 +46,50 @@ export const login =async (req,res)=>{
         if(!isMatch){
             return res.status(400).json({message:"Invalid Password"});
         }
-        res.json({message:"Login successful",token:generateToken(user)});
+        res.json({message:"Login successful",token:generateToken(user), user: {id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, profileImage: user.profileImage}});
     }catch(err){
         res.status(500).json({error:err.message});
     }
 }
+
+export const getCurrentUser = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                profileImage: true,
+                listings: {
+                    select: {
+                        id: true,
+                        title: true,
+                        price: true,
+                        image: true,
+                        createdAt: true,
+                    }
+                },
+                savedListings: {
+                    select: {
+                        id: true,
+                        title: true,
+                        price: true,
+                        image: true,
+                        createdAt: true,
+                    }
+                }
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

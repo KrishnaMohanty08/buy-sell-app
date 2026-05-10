@@ -7,6 +7,8 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import './styles/globals.css'
 import BuyPage from './pages/BuyPage'
 import HomePage from './pages/HomePage'
+import ProfilePage from './pages/ProfilePage'
+import { UserProvider } from './context/UserContext'
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem("authToken");
@@ -15,22 +17,25 @@ const ProtectedRoute = () => {
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/explore" element={<ExplorePage />} />
+    <UserProvider>
+      <>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/buy" element={<BuyPage />} />
-          <Route path="/sell" element={<SellPage />} />
-        </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/buy" element={<BuyPage />} />
+            <Route path="/sell" element={<SellPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
 
-        <Route path="/about" element={<h1>About Page</h1>} />
-      </Routes>
-      <Footer />
-    </>
+          <Route path="/about" element={<h1>About Page</h1>} />
+        </Routes>
+        <Footer />
+      </>
+    </UserProvider>
   )
 }
 

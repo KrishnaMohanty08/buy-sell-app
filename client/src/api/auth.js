@@ -81,3 +81,16 @@ export const fetchWithAuth = async (url, options = {}) => {
         headers
     });
 };
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await fetchWithAuth(`${API_BASE_URL}/api/auth/user`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch user');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Failed to get current user:", error);
+        throw error;
+    }
+};

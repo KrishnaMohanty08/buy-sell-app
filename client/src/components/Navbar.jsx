@@ -1,6 +1,9 @@
 import { useState } from "react";
 import '../styles/globals.css';
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import ProfileAvatar from "./ProfileAvatar";
+import { logout as logoutUser } from "../api/auth";
 
 const NAV_LINKS = [
   {
@@ -27,7 +30,15 @@ const NAV_LINKS = [
 
 export default function Navbar({ cartCount = 3 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const { user, logout: logoutContext } = useUser();
+
+  const handleLogout = () => {
+    logoutUser();
+    logoutContext();
+    navigate('/auth');
+  };
+
   return (
     <>
       <nav className="nav-root">
@@ -70,7 +81,12 @@ export default function Navbar({ cartCount = 3 }) {
             {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
           </button>
 
-          <button className="nav-cta" onClick={()=>navigate('/auth')}>Sign in</button>
+          {/* Auth Section - Profile or Sign In */}
+          {user ? (
+            <ProfileAvatar user={user} onLogout={handleLogout} />
+          ) : (
+            <button className="nav-cta" onClick={() => navigate('/auth')}>Sign in</button>
+          )}
 
           {/* Mobile hamburger */}
           <button
@@ -109,6 +125,18 @@ export default function Navbar({ cartCount = 3 }) {
               {item.label}
             </button>
           ))}
+          {user && (
+            <button
+              className="nav-link"
+              style={{ textAlign: "left", fontSize: "0.9rem", color: "#ff6b6b" }}
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </>
