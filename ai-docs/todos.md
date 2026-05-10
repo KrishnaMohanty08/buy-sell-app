@@ -21,7 +21,6 @@
 | generate-todos.sh | 75 | NOTE |  |
 | generate-todos.sh | 76 | NOTE |  |
 | generate-todos.sh | 78 | NOTE |  |
-| BuyPage.jsx | 64 | TODO | Replace with actual listing ID from route params or props |
 | SellPage.jsx | 37 | TODO | Replace with actual image upload and preview handling |
 <!-- AI:END:OPEN_TODOS -->
 
@@ -36,5 +35,5 @@
 
 <!-- AI:START:RESOLVED -->
 ### ✅ Resolved (removed from codebase)
-- None resolved in this commit.
+- BuyPage.jsx | 64 | TODO | Replace with actual listing ID from route params or props |
 <!-- AI:END:RESOLVED -->

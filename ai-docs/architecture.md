@@ -8,14 +8,14 @@
 
 <!-- AI:START:OVERVIEW -->
 ### 🏛️ Architecture Overview
-The system appears to be a full-stack application with a client and server, utilizing Docker Compose for containerization. The project involves API interactions and document generation.
+The system appears to be a full-stack application with a client and server, utilizing Docker Compose for containerization. The project involves API interactions, document generation, and e-commerce functionality with user authentication, listing management, and cart operations.
 <!-- AI:END:OVERVIEW -->
 
 ---
 
 <!-- AI:START:STACK -->
 ### 🔧 Tech Stack
-Docker Compose, Node.js, Prisma, GitHub Actions, Vite
+Docker Compose, Node.js, Prisma, Express.js, React, Vite, GitHub Actions, JSON Web Tokens (JWT), Bcrypt.js
 <!-- AI:END:STACK -->
 
 ---
@@ -29,14 +29,14 @@ The project is organized into several directories, including `client` for the fr
 
 <!-- AI:START:FLOW -->
 ### 🔄 Request / Data Flow
-The workflow involves client requests to the server, which handles authentication, routing, and data processing. The flow can be described as: Client → Server → Routes → Controllers → Services → Database.
+The workflow involves client requests to the server, which handles authentication, routing, and data processing. The flow can be described as: Client → Server → Routes (e.g., authRoutes, listingRoutes, cartRoutes) → Controllers (e.g., authController, listingController) → Services (e.g., Prisma client) → Database.
 <!-- AI:END:FLOW -->
 
 ---
 
 <!-- AI:START:SCHEMA -->
 ### 🗃️ Database / Schema Notes
-No schema changes detected.
+The database schema includes tables for Address, Listing, Order, User, Cart, CartItem, and Review. The Listing table has columns for title, description, price, condition, and sellerId. The User table has columns for firstName, lastName, email, password, and role. The schema also defines enums for PaymentStatus, OrderStatus, Condition, and Role.
 <!-- AI:END:SCHEMA -->
 
 ---
