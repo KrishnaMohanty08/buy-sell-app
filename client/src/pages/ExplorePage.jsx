@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
   Boxes,
@@ -40,6 +41,7 @@ const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
 
 export default function ExplorePage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeConditions, setActiveConditions] = useState([]);
   const [wished, setWished] = useState([]);
@@ -263,14 +265,22 @@ export default function ExplorePage() {
             {!loading && !error && (
               <div className={`product-grid ${viewMode === "list" ? "list-view" : ""}`}>
                 {listings.length > 0 ? listings.map((listing, i) => (
-                  <div className="product-card" key={listing.id} style={{ animationDelay: `${i * 0.05}s` }}>
+                  <div 
+                    className="product-card" 
+                    key={listing.id} 
+                    style={{ animationDelay: `${i * 0.05}s`, cursor: "pointer" }}
+                    onClick={() => navigate(`/buy/${listing.id}`)}
+                  >
                     <div className="card-image">
                       <span className="card-emoji" style={{ fontSize: "3rem", display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
                         📦
                       </span>
                       <div
                         className={`card-wish ${wished.includes(listing.id) ? "wished" : ""}`}
-                        onClick={() => toggleWish(listing.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWish(listing.id);
+                        }}
                       >
                         <Heart size={18} strokeWidth={2} fill={wished.includes(listing.id) ? "currentColor" : "none"} />
                       </div>
@@ -283,7 +293,15 @@ export default function ExplorePage() {
                         <div>
                           <span className="card-price">₹{listing.price?.toLocaleString()}</span>
                         </div>
-                        <button className="btn-card">Add to Cart</button>
+                        <button 
+                          className="btn-card"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/buy/${listing.id}`);
+                          }}
+                        >
+                          View Details
+                        </button>
                       </div>
                     </div>
                   </div>

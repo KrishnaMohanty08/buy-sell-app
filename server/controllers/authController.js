@@ -24,8 +24,7 @@ export const register = async (req, res) => {
                 id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email,
-                profileImage: user.profileImage
+                email: user.email
             }
         });
     } catch (err) {
@@ -46,7 +45,7 @@ export const login =async (req,res)=>{
         if(!isMatch){
             return res.status(400).json({message:"Invalid Password"});
         }
-        res.json({message:"Login successful",token:generateToken(user), user: {id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, profileImage: user.profileImage}});
+        res.json({message:"Login successful",token:generateToken(user), user: {id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email}});
     }catch(err){
         res.status(500).json({error:err.message});
     }
@@ -62,22 +61,12 @@ export const getCurrentUser = async (req, res) => {
                 firstName: true,
                 lastName: true,
                 email: true,
-                profileImage: true,
+                role: true,
                 listings: {
                     select: {
                         id: true,
                         title: true,
                         price: true,
-                        image: true,
-                        createdAt: true,
-                    }
-                },
-                savedListings: {
-                    select: {
-                        id: true,
-                        title: true,
-                        price: true,
-                        image: true,
                         createdAt: true,
                     }
                 }

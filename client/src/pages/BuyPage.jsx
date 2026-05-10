@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -15,21 +15,13 @@ import {
   Watch,
   Zap,
   AlertCircle,
+  Loader,
 } from "lucide-react";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
 import { addToCart } from "../api/cart.js";
+import { getListingById } from "../api/listing.js";
 import { isAuthenticated } from "../api/auth.js";
-
-const PRODUCT = {
-  title: "Vintage Gold Chronograph Watch",
-  category: "Collectibles",
-  price: 84500, oldPrice: 120000,
-  condition: "Like New", negotiable: true,
-  thumbs: [Watch, Search, Package, Gem],
-  seller: { name: "AuraCollects", avatar: "A", rating: 4.9, sales: 312, responseTime: "~2 hrs" },
-  rating: 4.8, reviewCount: 86, soldCount: 43,
-};
 
 const REVIEWS = [
   { name:"Rohan M.", date:"Apr 2026", rating:5, body:"Absolutely stunning piece. The seller packaged it immaculately and it arrived exactly as described. Highly recommend." },
@@ -48,22 +40,83 @@ const BAR_DATA = [
   {stars:5, pct:72}, {stars:4, pct:18}, {stars:3, pct:6}, {stars:2, pct:2}, {stars:1, pct:2}
 ];
 
+const DEFAULT_PRODUCT = {
+  title: "Product",
+  category: "Uncategorized",
+  price: 0,
+  oldPrice: 0,
+  condition: "Good",
+  negotiable: false,
+  thumbs: [Watch, Search, Package, Gem],
+  seller: { name: "Seller", avatar: "S", rating: 4.5, sales: 0, responseTime: "~2 hrs" },
+  rating: 4.5,
+  reviewCount: 0,
+  soldCount: 0,
+};
+
 export default function BuyPage() {
   const navigate = useNavigate();
+  const { listingId } = useParams();
   const [activeThumb, setActiveThumb] = useState(0);
   const [wished, setWished] = useState(false);
   const [qty, setQty] = useState(1);
   const [cartAdded, setCartAdded] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [offerOpen, setOfferOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const ActiveThumb = PRODUCT.thumbs[activeThumb];
+  const [product, setProduct] = useState(DEFAULT_PRODUCT);
 
-  // TODO: Replace with actual listing ID from route params or props
-  // For now using a dummy ID - update this when BuyPage is integrated with router
-  const LISTING_ID = "dummy-listing-id-replace-me";
+  // Fetch listing data on component mount
+  useEffect(() => {
+    const fetchListing = async () => {
+      if (!listingId) {
+        setError("No listing ID provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getListingById(listingId);
+        
+        // Transform API response to match product structure
+        setProduct({
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          category: data.category?.name || "Uncategorized",
+          price: data.price,
+          oldPrice: data.price * 1.2, // Placeholder for old price
+          condition: data.condition,
+          negotiable: data.negotiable,
+          thumbs: [Watch, Search, Package, Gem],
+          seller: {
+            name: data.seller?.firstName ? `${data.seller.firstName} ${data.seller.lastName}` : "Seller",
+            avatar: data.seller?.firstName?.charAt(0) || "S",
+            rating: 4.5,
+            sales: 0,
+            responseTime: "~2 hrs"
+          },
+          rating: 4.5,
+          reviewCount: 0,
+          soldCount: 0,
+        });
+      } catch (err) {
+        setError(err.message || "Failed to load listing");
+        console.error("Error fetching listing:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListing();
+  }, [listingId]);
+
+  const ActiveThumb = product.thumbs ? product.thumbs[activeThumb] : Watch;
 
   const handleAddCart = async () => {
     // Check if user is authenticated
@@ -72,12 +125,17 @@ export default function BuyPage() {
       return;
     }
 
-    setLoading(true);
+    if (!listingId) {
+      setError("Listing ID not found");
+      return;
+    }
+
+    setLoadingCart(true);
     setError(null);
     setSuccessMessage(null);
 
     try {
-      const result = await addToCart(LISTING_ID, qty);
+      const result = await addToCart(listingId, qty);
       setCartAdded(true);
       setSuccessMessage(result.message || "Item added to cart successfully!");
       
@@ -92,9 +150,39 @@ export default function BuyPage() {
       setCartAdded(false);
       console.error("Error adding to cart:", err);
     } finally {
-      setLoading(false);
+      setLoadingCart(false);
     }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
+        <div style={{ textAlign: "center" }}>
+          <Loader size={48} strokeWidth={2} style={{ animation: "spin 1s linear infinite", margin: "0 auto 1rem" }} />
+          <p style={{ color: "#6b7280" }}>Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error && !product.title) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
+        <div style={{ textAlign: "center", color: "#dc2626" }}>
+          <AlertCircle size={48} style={{ margin: "0 auto 1rem" }} />
+          <p>{error}</p>
+          <button 
+            onClick={() => navigate("/explore")}
+            style={{ marginTop: "1rem", padding: "0.5rem 1rem", backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "0.5rem", cursor: "pointer" }}
+          >
+            Back to Explore
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -104,8 +192,8 @@ export default function BuyPage() {
           <div className="breadcrumb">
             <a>Home</a><span>/</span>
             <a>Explore</a><span>/</span>
-            <a>Collectibles</a><span>/</span>
-            <strong>{PRODUCT.title}</strong>
+            <a>{product.category}</a><span>/</span>
+            <strong>{product.title}</strong>
           </div>
 
           {/* Main layout */}
@@ -123,7 +211,7 @@ export default function BuyPage() {
                 </div>
               </div>
               <div className="gallery-thumbs">
-                {PRODUCT.thumbs.map((t, i) => (
+                {product.thumbs && product.thumbs.map((t, i) => (
                   <div
                     key={i}
                     className={`gallery-thumb ${activeThumb === i ? "active" : ""}`}
@@ -138,9 +226,9 @@ export default function BuyPage() {
             {/* Info */}
             <div className="info-panel">
               <div>
-                <div className="info-category">{PRODUCT.category}</div>
+                <div className="info-category">{product.category}</div>
                 <div className="info-top-row">
-                  <h1 className="info-title">{PRODUCT.title}</h1>
+                  <h1 className="info-title">{product.title}</h1>
                   <button className="info-share"><ArrowUpRight size={15} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px", marginRight:"0.3rem"}} />Share</button>
                 </div>
               </div>
@@ -149,19 +237,19 @@ export default function BuyPage() {
               <div className="rating-row">
                 <div className="stars">
                   {[1,2,3,4,5].map(s => (
-                    <Star key={s} size={14} strokeWidth={2} fill={s <= Math.round(PRODUCT.rating) ? "currentColor" : "none"} className="star" />
+                    <Star key={s} size={14} strokeWidth={2} fill={s <= Math.round(product.rating) ? "currentColor" : "none"} className="star" />
                   ))}
                 </div>
-                <span className="rating-num">{PRODUCT.rating}</span>
-                <span className="rating-count">({PRODUCT.reviewCount} reviews)</span>
-                <span className="sold-badge">{PRODUCT.soldCount} sold</span>
+                <span className="rating-num">{product.rating}</span>
+                <span className="rating-count">({product.reviewCount} reviews)</span>
+                <span className="sold-badge">{product.soldCount} sold</span>
               </div>
 
               {/* Price */}
               <div className="price-block">
                 <div>
-                  <span className="price-main">₹{PRODUCT.price.toLocaleString()}</span>
-                  <span className="price-old">₹{PRODUCT.oldPrice.toLocaleString()}</span>
+                  <span className="price-main">₹{product.price.toLocaleString()}</span>
+                  <span className="price-old">₹{product.oldPrice.toLocaleString()}</span>
                   <span className="price-discount">30% off</span>
                 </div>
                 <div className="price-sub">Inclusive of all taxes · Free shipping</div>
@@ -169,8 +257,8 @@ export default function BuyPage() {
 
               {/* Condition */}
               <div className="cond-block">
-                <span className="cond-chip">{PRODUCT.condition}</span>
-                {PRODUCT.negotiable && <span className="neg-chip">💬 Negotiable</span>}
+                <span className="cond-chip">{product.condition}</span>
+                {product.negotiable && <span className="neg-chip">💬 Negotiable</span>}
               </div>
 
               {/* Quantity */}
@@ -222,9 +310,9 @@ export default function BuyPage() {
                 <button 
                   className={`btn-cart ${cartAdded ? "added" : ""}`} 
                   onClick={handleAddCart}
-                  disabled={loading}
+                  disabled={loadingCart}
                 >
-                  {loading ? (
+                  {loadingCart ? (
                     <>
                       <span style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}}>⏳</span>
                       Adding to Cart...
@@ -235,7 +323,7 @@ export default function BuyPage() {
                     <><ShoppingCart size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Add to Cart</>
                   )}
                 </button>
-                {PRODUCT.negotiable && (
+                {product.negotiable && (
                   <button className="btn-offer" onClick={() => setOfferOpen(true)}>
                     <MessageSquare size={16} strokeWidth={2} style={{display:"inline", verticalAlign:"-3px", marginRight:"0.35rem"}} />Make an Offer
                   </button>
@@ -262,11 +350,11 @@ export default function BuyPage() {
 
               {/* Seller */}
               <div className="seller-card">
-                <div className="seller-avatar">{PRODUCT.seller.avatar}</div>
+                <div className="seller-avatar">{product.seller.avatar}</div>
                 <div className="seller-info">
-                  <div className="seller-name">{PRODUCT.seller.name}</div>
+                  <div className="seller-name">{product.seller.name}</div>
                   <div className="seller-meta">
-                    <strong>{PRODUCT.seller.rating}★</strong> · {PRODUCT.seller.sales} sales · responds in {PRODUCT.seller.responseTime}
+                    <strong>{product.seller.rating}★</strong> · {product.seller.sales} sales · responds in {product.seller.responseTime}
                   </div>
                 </div>
                 <button className="btn-msg"><MessageSquare size={15} strokeWidth={2} style={{display:"inline", verticalAlign:"-2px", marginRight:"0.3rem"}} />Message</button>
