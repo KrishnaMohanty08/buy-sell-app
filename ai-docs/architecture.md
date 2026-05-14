@@ -36,7 +36,7 @@ The workflow involves client requests to the server, which handles authenticatio
 
 <!-- AI:START:SCHEMA -->
 ### 🗃️ Database / Schema Notes
-The database schema includes tables for Address, Listing, Order, User, Cart, CartItem, and Review. The Listing table has columns for title, description, price, condition, sellerId, brand, negotiable, and tags. The User table has columns for firstName, lastName, email, password, and role. The schema also defines enums for PaymentStatus, OrderStatus, Condition, and Role.
+The database schema includes tables for Address, Listing, Order, User, Cart, CartItem, and Review. The Listing table has columns for title, description, price, condition, sellerId, and createdAt. The User table has columns for firstName, lastName, email, password, and role. The schema also defines enums for PaymentStatus, OrderStatus, Condition, and Role.
 <!-- AI:END:SCHEMA -->
 
 ---
