@@ -21,6 +21,8 @@
 | generate-todos.sh | 75 | NOTE |  |
 | generate-todos.sh | 76 | NOTE |  |
 | generate-todos.sh | 78 | NOTE |  |
+| UserContext.jsx | 23 | TODO | Fetch cart count from API |
+| Navbar.jsx | 27 | TODO | Fetch cart count from API |
 | SellPage.jsx | 37 | TODO | Replace with actual image upload and preview handling |
 <!-- AI:END:OPEN_TODOS -->
 

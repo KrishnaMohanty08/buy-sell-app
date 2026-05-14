@@ -14,6 +14,7 @@
 - AI DevDocs Engine trigger setup
 - Merged main branch from https://github.com/KrishnaMohanty08/buy-sell-app
 - Created a new file for commit information
+- Added trigger-docs.yml workflow for automated documentation
 <!-- AI:END:COMPLETED -->
 
 ---
@@ -21,7 +22,10 @@
 <!-- AI:START:RECENT_CHANGES -->
 ### 🔁 Recent Changes
 _Last updated: 2026-05-08_
-- No significant changes in this commit.
+- Merged main branch from https://github.com/KrishnaMohanty08/buy-sell-app
+- Added new file changes.diff
+- Added new file commit.txt
+- Created trigger-docs.yml workflow for automated documentation
 <!-- AI:END:RECENT_CHANGES -->
 
 ---
