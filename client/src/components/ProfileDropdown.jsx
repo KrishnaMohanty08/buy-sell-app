@@ -7,7 +7,6 @@ export default function ProfileDropdown({ user, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -49,10 +48,10 @@ export default function ProfileDropdown({ user, onLogout }) {
   };
 
   return (
-    <div className="profile-dropdown-container" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       {/* Avatar Button */}
       <button
-        className="profile-avatar-btn"
+        className="w-10 h-10 rounded-full border-2 border-gold-400/30 hover:border-gold-400 hover:shadow-lg hover:shadow-gold-400/30 active:scale-95 transition-all flex items-center justify-center overflow-hidden flex-shrink-0"
         title={displayName}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Profile menu"
@@ -62,10 +61,10 @@ export default function ProfileDropdown({ user, onLogout }) {
           <img
             src={user.profileImage}
             alt={displayName}
-            className="profile-avatar-img"
+            className="w-full h-full object-cover rounded-full"
           />
         ) : (
-          <div className="profile-avatar-initials">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gold-400 to-gold-300 text-brown-900 font-semibold text-sm rounded-full">
             {initials}
           </div>
         )}
@@ -73,31 +72,28 @@ export default function ProfileDropdown({ user, onLogout }) {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="profile-dropdown-menu">
+        <div className="absolute top-full right-0 mt-2 w-56 bg-brown-900/98 border border-gold-400/30 rounded-xl shadow-2xl z-1000 animate-fade-up">
           {/* User Info Header */}
-          <div className="profile-dropdown-header">
-            <div className="profile-dropdown-avatar-small">
+          <div className="flex items-center gap-3 p-3 border-b border-gold-400/20">
+            <div className="w-10 h-10 rounded-full border border-gold-400/30 overflow-hidden flex-shrink-0">
               {user?.profileImage ? (
-                <img src={user.profileImage} alt={displayName} />
+                <img src={user.profileImage} alt={displayName} className="w-full h-full object-cover" />
               ) : (
-                <div className="profile-dropdown-initials-small">
+                <div className="w-full h-full bg-gradient-to-br from-gold-400 to-gold-300 flex items-center justify-center text-brown-900 font-semibold text-xs rounded-full">
                   {initials}
                 </div>
               )}
             </div>
             <div>
-              <p className="profile-dropdown-name">{displayName}</p>
-              <p className="profile-dropdown-email">{user?.email}</p>
+              <p className="m-0 text-white text-sm font-medium">{displayName}</p>
+              <p className="m-0 text-gray-400 text-xs mt-1">{user?.email}</p>
             </div>
           </div>
 
-          {/* Menu Divider */}
-          <hr className="profile-dropdown-divider" />
-
           {/* Menu Items */}
-          <div className="profile-dropdown-items">
+          <div className="flex flex-col gap-1 p-2">
             <button
-              className="profile-dropdown-item"
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 text-gray-300 text-sm transition-colors"
               onClick={() => handleMenuItemClick('profile')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -108,7 +104,7 @@ export default function ProfileDropdown({ user, onLogout }) {
             </button>
 
             <button
-              className="profile-dropdown-item"
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 text-gray-300 text-sm transition-colors"
               onClick={() => handleMenuItemClick('listings')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -119,7 +115,7 @@ export default function ProfileDropdown({ user, onLogout }) {
             </button>
 
             <button
-              className="profile-dropdown-item"
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 text-gray-300 text-sm transition-colors"
               onClick={() => handleMenuItemClick('orders')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -131,7 +127,7 @@ export default function ProfileDropdown({ user, onLogout }) {
             </button>
 
             <button
-              className="profile-dropdown-item"
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 text-gray-300 text-sm transition-colors"
               onClick={() => handleMenuItemClick('wishlist')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -141,21 +137,20 @@ export default function ProfileDropdown({ user, onLogout }) {
             </button>
           </div>
 
-          {/* Menu Divider */}
-          <hr className="profile-dropdown-divider" />
-
           {/* Logout Button */}
-          <button
-            className="profile-dropdown-item logout-item"
-            onClick={() => handleMenuItemClick('logout')}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span>Logout</span>
-          </button>
+          <div className="border-t border-gold-400/20">
+            <button
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-500/10 hover:text-orange-500 text-gray-300 text-sm transition-colors m-2"
+              onClick={() => handleMenuItemClick('logout')}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

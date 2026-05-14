@@ -17,12 +17,18 @@ export const UserProvider = ({ children }) => {
         setError(null);
         
         if (isAuthenticated()) {
-          const userData = await getCurrentUser();
-          setUser(userData);
-          
-          // TODO: Fetch cart count from API
-          // For now, set to 0
-          setCartCount(0);
+          try {
+            const userData = await getCurrentUser();
+            setUser(userData);
+            setCartCount(0);
+          } catch (err) {
+            // If user profile fetch fails but token exists, keep user authenticated
+            // Create a minimal user object to indicate authenticated state
+            console.warn('Failed to fetch user profile, but token exists:', err);
+            setError(err.message);
+            setUser({ id: 'authenticated', authenticated: true });
+            setCartCount(0);
+          }
         } else {
           setUser(null);
           setCartCount(0);

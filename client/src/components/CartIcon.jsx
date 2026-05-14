@@ -10,7 +10,7 @@ export default function CartIcon({ count = 0 }) {
 
   return (
     <button 
-      className="nav-icon-btn cart-icon-btn" 
+      className="relative p-2 hover:text-gold-400 text-gray-300 transition-colors flex-shrink-0"
       title="Cart"
       onClick={handleCartClick}
       aria-label={`Cart with ${count} items`}
@@ -22,7 +22,7 @@ export default function CartIcon({ count = 0 }) {
       </svg>
       
       {count > 0 && (
-        <span className="nav-badge cart-badge" aria-label={`${count} items in cart`}>
+        <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold bg-orange-500 text-white rounded-full" aria-label={`${count} items in cart`}>
           {count > 99 ? '99+' : count}
         </span>
       )}

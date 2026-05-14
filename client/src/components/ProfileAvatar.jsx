@@ -11,9 +11,9 @@ export default function ProfileAvatar({ user, onLogout }) {
   };
 
   return (
-    <div className="profile-avatar-container">
+    <div className="flex items-center">
       <button 
-        className="profile-avatar-btn" 
+        className="w-10 h-10 rounded-full border-2 border-gold-400/30 hover:border-gold-400 hover:shadow-lg hover:shadow-gold-400/30 active:scale-95 transition-all flex items-center justify-center overflow-hidden flex-shrink-0"
         title={displayName}
         onClick={handleProfileClick}
         aria-label="View profile"
@@ -22,10 +22,10 @@ export default function ProfileAvatar({ user, onLogout }) {
           <img 
             src={user.profileImage} 
             alt={displayName}
-            className="profile-avatar-img"
+            className="w-full h-full object-cover rounded-full"
           />
         ) : (
-          <div className="profile-avatar-initials">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gold-400 to-gold-300 text-brown-900 font-semibold text-sm rounded-full">
             {initials}
           </div>
         )}

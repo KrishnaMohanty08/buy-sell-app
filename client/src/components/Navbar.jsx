@@ -21,18 +21,14 @@ export default function Navbar() {
   const location = useLocation();
   const { user, loading, logout: logoutContext } = useUser();
 
-  // Fetch cart count when user is authenticated
   useEffect(() => {
     if (user && user.id) {
-      // TODO: Fetch cart count from API
-      // For now, using mock data
       setCartCount(0);
     } else {
       setCartCount(0);
     }
   }, [user]);
 
-  // Close mobile menu when navigating
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
@@ -51,28 +47,33 @@ export default function Navbar() {
     navigate(href);
   };
 
-  // Show loader while authenticating
   if (loading) {
     return <NavbarLoader />;
   }
 
   return (
-    <nav className="nav-root">
+    <nav className="h-16 flex items-center justify-between px-4 md:px-8 bg-brown-900/95 border-b border-gold-400/20 font-dm-sans backdrop-blur-sm relative z-40">
       {/* Logo */}
       <button
-        className="nav-logo-btn"
+        className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0"
         onClick={handleLogoClick}
         aria-label="BAZAAR Home"
       >
-        <span className="nav-logo">BaZaaR</span>
+        <span className="text-xl md:text-2xl font-playfair font-semibold bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent tracking-wide">
+          BaZaaR
+        </span>
       </button>
 
       {/* Desktop Navigation Links */}
-      <ul className="nav-links">
+      <ul className="hidden md:flex list-none gap-8 m-0 p-0 absolute left-1/2 transform -translate-x-1/2">
         {NAV_LINKS.map((item) => (
           <li key={item.label}>
             <button
-              className={`nav-link ${location.pathname === item.href ? 'active' : ''}`}
+              className={`text-sm font-medium transition-colors ${
+                location.pathname === item.href
+                  ? 'text-gold-400'
+                  : 'text-gray-300 hover:text-gold-400'
+              }`}
               onClick={() => handleNavClick(item.href)}
             >
               {item.label}
@@ -82,9 +83,9 @@ export default function Navbar() {
       </ul>
 
       {/* Actions Section */}
-      <div className="nav-actions">
+      <div className="flex items-center gap-2 md:gap-3 ml-auto">
         {/* Search Icon */}
-        <button className="nav-icon-btn" title="Search" aria-label="Search">
+        <button className="p-2 hover:text-gold-400 text-gray-300 transition-colors flex-shrink-0" title="Search" aria-label="Search">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
             <circle cx="6.5" cy="6.5" r="5" />
             <line x1="10.5" y1="10.5" x2="14" y2="14" />
@@ -93,7 +94,7 @@ export default function Navbar() {
 
         {/* Wishlist Icon - Only for logged-in users */}
         {user && (
-          <button className="nav-icon-btn" title="Wishlist" aria-label="Wishlist">
+          <button className="p-2 hover:text-gold-400 text-gray-300 transition-colors flex-shrink-0" title="Wishlist" aria-label="Wishlist">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
@@ -105,36 +106,38 @@ export default function Navbar() {
 
         {/* Authentication Section */}
         {user ? (
-          // Logged In: Profile Dropdown + Cart
           <ProfileDropdown user={user} onLogout={handleLogout} />
         ) : (
-          // Not Logged In: Sign In Button
-          <button className="nav-cta" onClick={() => navigate('/auth')}>
+          <button className="hidden md:inline-block px-4 py-2 bg-gold-400 text-brown-900 rounded-lg font-medium hover:bg-gold-300 transition-colors text-sm flex-shrink-0" onClick={() => navigate('/auth')}>
             Sign in
           </button>
         )}
 
         {/* Mobile Menu Toggle */}
         <button
-          className={`nav-mobile-toggle ${mobileMenuOpen ? 'open' : ''}`}
+          className="md:hidden flex flex-col gap-1.5 items-center justify-center p-2 hover:opacity-70 transition-opacity flex-shrink-0"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
           aria-expanded={mobileMenuOpen}
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="nav-mobile-menu">
-          <ul className="nav-mobile-links">
+        <div className="absolute top-16 left-0 right-0 bg-brown-900/98 border-b border-gold-400/20 backdrop-blur-sm z-50 md:hidden animate-fade-up">
+          <ul className="flex flex-col gap-1 p-4 list-none m-0">
             {NAV_LINKS.map((item) => (
               <li key={item.label}>
                 <button
-                  className={`nav-mobile-link ${location.pathname === item.href ? 'active' : ''}`}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors text-sm ${
+                    location.pathname === item.href
+                      ? 'bg-gold-400/15 text-gold-400'
+                      : 'text-gray-300 hover:bg-gold-400/10 hover:text-gold-400'
+                  }`}
                   onClick={() => handleNavClick(item.href)}
                 >
                   {item.label}
@@ -143,56 +146,15 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* Mobile Auth Section */}
           {!user && (
-            <button className="nav-mobile-cta" onClick={() => navigate('/auth')}>
-              Sign in
-            </button>
+            <div className="p-4">
+              <button className="w-full px-4 py-2 bg-gold-400 text-brown-900 rounded-lg font-medium hover:bg-gold-300 transition-colors text-sm" onClick={() => navigate('/auth')}>
+                Sign in
+              </button>
+            </div>
           )}
         </div>
       )}
     </nav>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div
-          style={{
-            background: "rgba(26,18,8,0.97)",
-            borderBottom: "0.5px solid rgba(242,185,73,0.18)",
-            padding: "1rem 1.25rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            fontFamily: "'DM Sans', sans-serif",
-          }}
-        >
-          {NAV_LINKS.map((item) => (
-            <button
-              key={item.label}
-              className="nav-link"
-              style={{ textAlign: "left", fontSize: "0.9rem" }}
-              onClick={() => {
-                navigate(item.href);
-                setMenuOpen(false);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-          {user && (
-            <button
-              className="nav-link"
-              style={{ textAlign: "left", fontSize: "0.9rem", color: "#ff6b6b" }}
-              onClick={() => {
-                handleLogout();
-                setMenuOpen(false);
-              }}
-            >
-              Logout
-            </button>
-          )}
-        </div>
-      )}
-    </>
   );
 }

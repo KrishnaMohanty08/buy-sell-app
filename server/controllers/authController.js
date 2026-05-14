@@ -70,16 +70,6 @@ export const getCurrentUser = async (req, res) => {
                         id: true,
                         title: true,
                         price: true,
-                        image: true,
-                        createdAt: true,
-                    }
-                },
-                savedListings: {
-                    select: {
-                        id: true,
-                        title: true,
-                        price: true,
-                        image: true,
                         createdAt: true,
                     }
                 }

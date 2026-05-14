@@ -1,61 +1,111 @@
-/* ═══════════════════════════════════════════════════════════════ */
-/* UNIFIED GLOBAL STYLES - All components import from here */
-/* ═══════════════════════════════════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* ─────────────────────────────────────────────────────────────── */
-/* KEYFRAME ANIMATIONS */
-/* ─────────────────────────────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
+/* Base typography */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-brown-900 text-white font-dm-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
 }
 
-@keyframes floatCard {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-10px); }
-}
+/* Component layer utilities */
+@layer components {
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-400;
+  }
 
-@keyframes leftFadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  .btn-primary {
+    @apply btn bg-gold-400 text-brown-900 hover:bg-gold-300 active:scale-95;
+  }
 
-@keyframes float1 {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-  50%       { transform: translate(-50%, -50%) translateY(-14px); }
-}
+  .btn-secondary {
+    @apply btn bg-transparent text-white border border-gold-400 hover:bg-gold-400 hover:text-brown-900;
+  }
 
-@keyframes float2 {
-  0%, 100% { transform: translateY(0px) rotate(-3deg); }
-  50%       { transform: translateY(-9px) rotate(-3deg); }
-}
+  .btn-ghost {
+    @apply btn bg-none text-white hover:text-gold-400;
+  }
 
-@keyframes float3 {
-  0%, 100% { transform: translateY(0px) rotate(4deg); }
-  50%       { transform: translateY(-11px) rotate(4deg); }
-}
+  .btn-icon {
+    @apply inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors;
+  }
 
-@keyframes dotBlink {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50%       { opacity: 1; transform: scale(1.35); }
-}
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+  .card-dark {
+    @apply bg-brown-800 rounded-xl border border-gold-400/20 overflow-hidden transition-all duration-300;
+  }
 
-@keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center justify-center px-2 py-1 text-xs font-semibold rounded-full;
+  }
 
-@keyframes authFadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  .badge-primary {
+    @apply badge bg-gold-400 text-brown-900;
+  }
+
+  .badge-secondary {
+    @apply badge bg-orange-500 text-white;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-2 rounded-lg bg-white text-brown-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gold-400 transition-all;
+  }
+
+  .input-dark {
+    @apply w-full px-4 py-2 rounded-lg bg-brown-800 text-white border border-gold-400/30 focus:outline-none focus:ring-2 focus:ring-gold-400;
+  }
+
+  /* Section styles */
+  .section {
+    @apply py-16 md:py-24 px-4 md:px-8;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent;
+  }
+
+  /* Navigation links */
+  .nav-link {
+    @apply text-gray-300 hover:text-gold-400 transition-colors font-medium;
+  }
+
+  .nav-link-active {
+    @apply text-gold-400;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply bg-gradient-to-r from-gold-400/20 via-gold-400/10 to-gold-400/20 rounded animate-shimmer;
+    background-size: 200% 100%;
+  }
+
+  /* Page placeholder */
+  .page-placeholder {
+    @apply flex items-center justify-center min-h-screen text-2xl font-semibold text-white;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────── */

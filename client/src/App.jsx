@@ -22,15 +22,10 @@ function App() {
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/about" element={<h1>About Page</h1>} />
 
+          {/* Public Routes - No Authentication Required */}
+          <Route path="/buy" element={<BuyPage />} />
+
           {/* Protected Routes - Require Authentication */}
-          <Route
-            path="/buy"
-            element={
-              <ProtectedRoute>
-                <BuyPage />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/sell"
             element={
