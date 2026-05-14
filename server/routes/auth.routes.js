@@ -1,7 +1,7 @@
 import express from "express"
 import {register,login, getCurrentUser,requestOtp, verifyOtp } from "../controllers/authController.js";
 import authMiddleWare from "../middleware/authMiddleware.js";
-const { otpRequestLimiter, otpVerifyLimiter } = require('../middleware/rateLimiter');
+import { otpRequestLimiter, otpVerifyLimiter } from '../middleware/rateLimiter.js';
 
 
 const router=express.Router();

@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/authRoutes.js";
-import listingRoutes from "./routes/listing.js";
-import cartRoutes from "./routes/cartRoutes.js";
+import authRoutes from "./routes/auth.routes.js";
+import listingRoutes from "./routes/listing.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 
 const app = express();
 

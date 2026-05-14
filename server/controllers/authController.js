@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs"
 import prisma from "../prisma/client.js"
 import generateToken from "../utils/jwt.js"
-import { generateOtp, getOtpExpiry } from '../utils/otp';
-import {  sendOtpEmail }  from '../utils/mailer';
+import { generateOtp, getOtpExpiry } from '../utils/otp.js';
+import {  sendOtpEmail }  from '../utils/mailer.js';
 
 export const register = async (req, res) => {
     try {
@@ -169,13 +169,19 @@ export const verifyOtp = async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const token = generateToken(user);
 
-    return res.status(200).json({ token, user });
+    return res.status(200).json({ 
+      message: 'OTP verified successfully',
+      token, 
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        profileImage: user.profileImage
+      }
+    });
   } catch (err) {
     console.error('verifyOtp error:', err);
     return res.status(500).json({ message: 'Internal server error' });

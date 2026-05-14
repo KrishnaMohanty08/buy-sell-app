@@ -16,6 +16,7 @@ export default function ProfileAvatar({ user, onLogout }) {
         className="profile-avatar-btn" 
         title={displayName}
         onClick={handleProfileClick}
+        aria-label="View profile"
       >
         {user?.profileImage ? (
           <img 

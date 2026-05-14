@@ -1,103 +1,157 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import '../styles/globals.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import ProfileAvatar from "./ProfileAvatar";
+import ProfileDropdown from "./ProfileDropdown";
+import CartIcon from "./CartIcon";
+import NavbarLoader from "./NavbarLoader";
 import { logout as logoutUser } from "../api/auth";
 
 const NAV_LINKS = [
-  {
-    "label": "Shop",
-    "href": "/buy"
-  },
-  {
-    "label": "Sell",
-    "href": "/sell"
-  },
-  {
-    "label": "Explore",
-    "href": "/explore"
-  },
-  {
-    "label": "Drops",
-    "href": "/drops"
-  },
-  {
-    "label": "About",
-    "href": "/about"
-  }
+  { label: "Shop", href: "/buy" },
+  { label: "Sell", href: "/sell" },
+  { label: "Explore", href: "/explore" },
+  { label: "About", href: "/about" },
 ];
 
-export default function Navbar({ cartCount = 3 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+export default function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
-  const { user, logout: logoutContext } = useUser();
+  const location = useLocation();
+  const { user, loading, logout: logoutContext } = useUser();
+
+  // Fetch cart count when user is authenticated
+  useEffect(() => {
+    if (user && user.id) {
+      // TODO: Fetch cart count from API
+      // For now, using mock data
+      setCartCount(0);
+    } else {
+      setCartCount(0);
+    }
+  }, [user]);
+
+  // Close mobile menu when navigating
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
 
   const handleLogout = () => {
     logoutUser();
     logoutContext();
-    navigate('/auth');
+    navigate('/');
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
+  const handleNavClick = (href) => {
+    navigate(href);
+  };
+
+  // Show loader while authenticating
+  if (loading) {
+    return <NavbarLoader />;
+  }
+
   return (
-    <>
-      <nav className="nav-root">
-        {/* Logo */}
+    <nav className="nav-root">
+      {/* Logo */}
+      <button
+        className="nav-logo-btn"
+        onClick={handleLogoClick}
+        aria-label="BAZAAR Home"
+      >
         <span className="nav-logo">BaZaaR</span>
+      </button>
 
-        {/* Desktop links */}
-        <ul className="nav-links">
-          {NAV_LINKS.map((item) => (
-            <li key={item.label}>
-              <button className="nav-link" onClick={() => navigate(item.href)}>{item.label}</button>
-            </li>
-          ))}
-        </ul>
+      {/* Desktop Navigation Links */}
+      <ul className="nav-links">
+        {NAV_LINKS.map((item) => (
+          <li key={item.label}>
+            <button
+              className={`nav-link ${location.pathname === item.href ? 'active' : ''}`}
+              onClick={() => handleNavClick(item.href)}
+            >
+              {item.label}
+            </button>
+          </li>
+        ))}
+      </ul>
 
-        {/* Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          {/* Search */}
-          <button className="nav-icon-btn" title="Search">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="6.5" cy="6.5" r="5" />
-              <line x1="10.5" y1="10.5" x2="14" y2="14" />
+      {/* Actions Section */}
+      <div className="nav-actions">
+        {/* Search Icon */}
+        <button className="nav-icon-btn" title="Search" aria-label="Search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="6.5" cy="6.5" r="5" />
+            <line x1="10.5" y1="10.5" x2="14" y2="14" />
+          </svg>
+        </button>
+
+        {/* Wishlist Icon - Only for logged-in users */}
+        {user && (
+          <button className="nav-icon-btn" title="Wishlist" aria-label="Wishlist">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
+        )}
 
-          {/* Wishlist */}
-          <button className="nav-icon-btn" title="Wishlist">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M8 13.5S1.5 9.5 1.5 5.5a3 3 0 015-2.24A3 3 0 0114.5 5.5c0 4-6.5 8-6.5 8z" />
-            </svg>
+        {/* Cart Icon - Only for logged-in users */}
+        {user && <CartIcon count={cartCount} />}
+
+        {/* Authentication Section */}
+        {user ? (
+          // Logged In: Profile Dropdown + Cart
+          <ProfileDropdown user={user} onLogout={handleLogout} />
+        ) : (
+          // Not Logged In: Sign In Button
+          <button className="nav-cta" onClick={() => navigate('/auth')}>
+            Sign in
           </button>
+        )}
 
-          {/* Cart */}
-          <button className="nav-icon-btn" title="Cart">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M1.5 1.5h1.8l1.8 8h7.4l1.5-5H4.5" />
-              <circle cx="6.5" cy="12.5" r="1" fill="currentColor" stroke="none" />
-              <circle cx="11.5" cy="12.5" r="1" fill="currentColor" stroke="none" />
-            </svg>
-            {cartCount > 0 && <span className="nav-badge">{cartCount}</span>}
-          </button>
+        {/* Mobile Menu Toggle */}
+        <button
+          className={`nav-mobile-toggle ${mobileMenuOpen ? 'open' : ''}`}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
 
-          {/* Auth Section - Profile or Sign In */}
-          {user ? (
-            <ProfileAvatar user={user} onLogout={handleLogout} />
-          ) : (
-            <button className="nav-cta" onClick={() => navigate('/auth')}>Sign in</button>
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="nav-mobile-menu">
+          <ul className="nav-mobile-links">
+            {NAV_LINKS.map((item) => (
+              <li key={item.label}>
+                <button
+                  className={`nav-mobile-link ${location.pathname === item.href ? 'active' : ''}`}
+                  onClick={() => handleNavClick(item.href)}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* Mobile Auth Section */}
+          {!user && (
+            <button className="nav-mobile-cta" onClick={() => navigate('/auth')}>
+              Sign in
+            </button>
           )}
-
-          {/* Mobile hamburger */}
-          <button
-            className="nav-mobile-toggle"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
         </div>
-      </nav>
+      )}
+    </nav>
 
       {/* Mobile menu */}
       {menuOpen && (

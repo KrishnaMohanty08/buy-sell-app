@@ -29,6 +29,46 @@ export const login =async(email,password)=>{
         throw error;
     }
 }
+
+export const requestOtp = async (email) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/request-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to request OTP');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('requestOtp failed:', error);
+        throw error;
+    }
+}
+
+export const verifyOtp = async (email, otp) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'OTP verification failed');
+        }
+        const data = await response.json();
+        if (data.token) {
+            localStorage.setItem('authToken', data.token);
+        }
+        return data;
+    } catch (error) {
+        console.error('verifyOtp failed:', error);
+        throw error;
+    }
+}
 export const register =async(firstName,lastName,email,password)=>{
     try {
       const response =await fetch(`${API_BASE_URL}/api/auth/register`,{
