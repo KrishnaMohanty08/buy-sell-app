@@ -17,6 +17,7 @@
 - Added trigger-docs.yml workflow for automated documentation
 - Added new file changes.diff
 - Added new file commit.txt
+- Updated GitHub workflow to trigger AI Docs on push to main branch
 <!-- AI:END:COMPLETED -->
 
 ---
@@ -28,6 +29,7 @@ _Last updated: 2026-05-08_
 - Added new file changes.diff
 - Added new file commit.txt
 - Created trigger-docs.yml workflow for automated documentation
+- Updated GitHub workflow to trigger AI Docs on push to main branch
 <!-- AI:END:RECENT_CHANGES -->
 
 ---
