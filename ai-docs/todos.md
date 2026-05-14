@@ -35,5 +35,5 @@
 
 <!-- AI:START:RESOLVED -->
 ### ✅ Resolved (removed from codebase)
-- BuyPage.jsx | 64 | TODO | Replace with actual listing ID from route params or props |
+- None resolved in this commit.
 <!-- AI:END:RESOLVED -->
