@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use("/api/cart", cartRoutes);
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(4000,"0.0.0.0", () => {
   console.log("Server running on port 4000");

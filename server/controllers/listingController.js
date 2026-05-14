@@ -22,6 +22,7 @@ export const createListing = async (req, res) => {
       condition,
       tags,
       negotiable,
+      stockQuantity,
       images,
     } = req.body;
 
@@ -45,12 +46,18 @@ export const createListing = async (req, res) => {
       return res.status(400).json({ message: "Invalid price value" });
     }
 
+    const stock = stockQuantity === undefined ? 1 : Number(stockQuantity);
+    if (!Number.isInteger(stock) || stock < 1) {
+      return res.status(400).json({ message: "Stock quantity must be at least 1" });
+    }
+
     const listing = await prisma.listing.create({
       data: {
         title: String(title).trim(),
         description: String(description).trim(),
         brand: typeof brand === "string" && brand.trim() ? brand.trim() : null,
         price,
+        stock,
         condition: mappedCondition,
         negotiable: Boolean(negotiable),
         tags: Array.isArray(tags)
@@ -115,7 +122,7 @@ export const getListings = async (req, res) => {
     } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
-    const where = { isSold: false };
+    const where = { isSold: false, isActive: true, deletedAt: null, stock: { gt: 0 } };
 
     // Category filter
     if (category && category !== "All") {

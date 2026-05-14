@@ -13,107 +13,114 @@ datasource db {
 }
 
 model Address {
-  id          String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  fullName    String
-  phone       String
+  fullName String
+  phone    String
 
-  street      String
-  city        String
-  state       String
-  postalCode  String
-  country     String
+  street     String
+  city       String
+  state      String
+  postalCode String
+  country    String
 
-  isDefault   Boolean  @default(false)
+  isDefault Boolean @default(false)
 
   // ✅ ADD THIS
-  orders      Order[]
+  orders Order[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Listing {
-  id          String      @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String
   brand       String?
   price       Float
   condition   Condition
-  negotiable  Boolean     @default(false)
+  negotiable  Boolean   @default(false)
   tags        Json?
-  isSold      Boolean     @default(false)
+  isSold      Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  deletedAt   DateTime?
+  stock       Int       @default(1)
 
-  seller      User        @relation(fields: [sellerId], references: [id])
-  sellerId    String
+  seller   User   @relation(fields: [sellerId], references: [id])
+  sellerId String
 
-  category    Category    @relation(fields: [categoryId], references: [id])
-  categoryId  String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 
-  images      Image[]
-  reviews     Review[]
+  images  Image[]
+  reviews Review[]
 
   // ✅ ADD THESE
-  orders      Order[]
-  cartItems   CartItem[]
+  orders    Order[]
+  cartItems CartItem[]
 
-  createdAt   DateTime    @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Order {
-  id          String      @id @default(uuid())
+  id String @id @default(uuid())
 
-  buyer       User        @relation(fields: [buyerId], references: [id])
-  buyerId     String
+  buyer   User   @relation(fields: [buyerId], references: [id])
+  buyerId String
 
-  listing     Listing     @relation(fields: [listingId], references: [id])
-  listingId   String
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String
 
-  address     Address     @relation(fields: [addressId], references: [id])
-  addressId   String
+  address   Address @relation(fields: [addressId], references: [id])
+  addressId String
 
-  totalPrice  Float
-  status      OrderStatus @default(PENDING)
+  totalPrice Float
+  status     OrderStatus @default(PENDING)
 
-  payment     Payment?
+  payment Payment?
 
-  createdAt   DateTime    @default(now())
+  createdAt DateTime @default(now())
 }
 
 model User {
-  id          String    @id @default(uuid())
-  firstName   String
-  lastName    String
-  email       String    @unique
-  password    String
-  role        Role      @default(USER)
+  id           String  @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String  @unique
+  password     String
+  role         Role    @default(USER)
+  profileImage String? // ← add this
 
-  listings    Listing[]
-  orders      Order[]
-  reviews     Review[]
+  listings  Listing[]
+  orders    Order[]
+  reviews   Review[]
+  cart      Cart?
+  addresses Address[]
 
-  cart        Cart?
-  addresses   Address[]
-
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  cart      Cart     @relation(fields: [cartId], references: [id])
-  cartId    String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId String
 
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   listingId String
 
-  quantity  Int      @default(1)
+  quantity      Int   @default(1)
+  priceSnapshot Float
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([cartId, listingId]) // prevents duplicate items
+  @@index([cartId])
+  @@index([listingId])
 }
 
 model OtpToken {
@@ -128,29 +135,29 @@ model OtpToken {
 }
 
 model Cart {
-  id        String     @id @default(uuid())
+  id String @id @default(uuid())
 
-  user      User       @relation(fields: [userId], references: [id])
-  userId    String     @unique   // one cart per user
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique // one cart per user
 
-  items     CartItem[]
+  items CartItem[]
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
-  id          String   @id @default(uuid())
-  rating      Int      // 1–5
-  comment     String?
+  id      String  @id @default(uuid())
+  rating  Int // 1–5
+  comment String?
 
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  listing     Listing  @relation(fields: [listingId], references: [id])
-  listingId   String
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 enum PaymentStatus {
@@ -160,13 +167,13 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id        String   @id @default(uuid())
-  amount    Float
-  status    PaymentStatus
-  method    String   // e.g. UPI, CARD
+  id     String        @id @default(uuid())
+  amount Float
+  status PaymentStatus
+  method String // e.g. UPI, CARD
 
-  order     Order    @relation(fields: [orderId], references: [id])
-  orderId   String   @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String @unique
 
   createdAt DateTime @default(now())
 }
@@ -178,18 +185,18 @@ enum OrderStatus {
 }
 
 model Image {
-  id        String   @id @default(uuid())
-  url       String
+  id  String @id @default(uuid())
+  url String
 
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  listing   Listing @relation(fields: [listingId], references: [id])
   listingId String
 }
 
 model Category {
-  id        String     @id @default(uuid())
-  name      String     @unique
+  id   String @id @default(uuid())
+  name String @unique
 
-  listings  Listing[]
+  listings Listing[]
 }
 
 enum Condition {

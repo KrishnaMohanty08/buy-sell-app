@@ -6,45 +6,54 @@ import ProfileDropdown from "./ProfileDropdown";
 import CartIcon from "./CartIcon";
 import NavbarLoader from "./NavbarLoader";
 import { logout as logoutUser } from "../api/auth";
+import { useCartStore } from "../store/cartStore";
 
 const NAV_LINKS = [
-  { label: "Shop", href: "/buy" },
   { label: "Sell", href: "/sell" },
   { label: "Explore", href: "/explore" },
   { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, logout: logoutContext } = useUser();
+  const cartCount = useCartStore((state) => state.totals.itemCount);
+  const fetchCart = useCartStore((state) => state.fetchCart);
+  const resetCart = useCartStore((state) => state.resetCart);
+  const openCartDrawer = useCartStore((state) => state.openDrawer);
 
   useEffect(() => {
     if (user && user.id) {
-      setCartCount(0);
+      fetchCart().catch(() => {});
     } else {
-      setCartCount(0);
+      resetCart();
     }
-  }, [user]);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location]);
+  }, [fetchCart, resetCart, user]);
 
   const handleLogout = () => {
     logoutUser();
     logoutContext();
+    resetCart();
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
   const handleLogoClick = () => {
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
   const handleNavClick = (href) => {
+    setMobileMenuOpen(false);
     navigate(href);
+  };
+
+  const handleCartClick = () => {
+    setMobileMenuOpen(false);
+    openCartDrawer();
   };
 
   if (loading) {
@@ -102,7 +111,7 @@ export default function Navbar() {
         )}
 
         {/* Cart Icon - Only for logged-in users */}
-        {user && <CartIcon count={cartCount} />}
+        {user && <CartIcon count={cartCount} onClick={handleCartClick} />}
 
         {/* Authentication Section */}
         {user ? (

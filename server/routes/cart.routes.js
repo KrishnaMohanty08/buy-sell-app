@@ -10,11 +10,17 @@ import {
 
 const router = express.Router();
 
-// All cart routes require authentication
-router.post("/add", protect, addToCart);
-router.get("/", protect, getCart);
-router.delete("/:cartItemId", protect, removeFromCart);
-router.patch("/:cartItemId", protect, updateCartItemQuantity);
-router.delete("/", protect, clearCart);
+router.use(protect);
+
+router.post("/add", addToCart);
+router.get("/", getCart);
+router.patch("/item/:id", updateCartItemQuantity);
+router.delete("/item/:id", removeFromCart);
+router.delete("/clear", clearCart);
+
+// Backward-compatible aliases for older client calls.
+router.patch("/:id", updateCartItemQuantity);
+router.delete("/:id", removeFromCart);
+router.delete("/", clearCart);
 
 export default router;

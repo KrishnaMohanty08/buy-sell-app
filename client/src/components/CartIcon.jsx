@@ -1,10 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import '../styles/globals.css';
 
-export default function CartIcon({ count = 0 }) {
+export default function CartIcon({ count = 0, onClick }) {
   const navigate = useNavigate();
 
   const handleCartClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
+
     navigate('/cart');
   };
 
