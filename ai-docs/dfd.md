@@ -44,8 +44,8 @@ graph LR
 
 <!-- AI:START:CHANGE_SUMMARY -->
 ### 📝 Diagram Change Notes
-- No significant changes detected in the system-level data flow.
-- Updated the feature-level data flow to reflect the trigger of AI DevDocs Engine by the workflow and the generation of docs.
+- No changes detected in the system or feature-level data flows.
+- The git diff indicates a new GitHub workflow file added, but it does not affect the existing data flows.
 <!-- AI:END:CHANGE_SUMMARY -->
 
 ---
