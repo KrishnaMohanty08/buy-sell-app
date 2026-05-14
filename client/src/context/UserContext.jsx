@@ -8,6 +8,7 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch user on mount and when token changes
   useEffect(() => {
@@ -44,7 +45,7 @@ export const UserProvider = ({ children }) => {
     };
 
     loadUser();
-  }, []);
+  }, [refreshTrigger]);
 
   const logout = () => {
     setUser(null);
@@ -60,6 +61,11 @@ export const UserProvider = ({ children }) => {
     setCartCount(count);
   };
 
+  const reloadUser = () => {
+    // Trigger useEffect to reload user data
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   const value = {
     user,
     loading,
@@ -68,6 +74,7 @@ export const UserProvider = ({ children }) => {
     logout,
     updateUser,
     updateCartCount,
+    reloadUser,
   };
 
   return (

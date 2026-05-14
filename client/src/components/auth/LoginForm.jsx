@@ -7,10 +7,12 @@ import {
   SubmitButton,
 } from "./AuthFields";
 import { login, requestOtp, verifyOtp } from "../../api/auth.js";
+import { useUser } from "../../context/UserContext";
 import "../../styles/login.css";
 
 export default function LoginForm({ onSwitchToRegister }) {
   const navigate = useNavigate();
+  const { reloadUser } = useUser();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
       email: "",
@@ -31,6 +33,7 @@ export default function LoginForm({ onSwitchToRegister }) {
       setErrorMessage("");
       const result = await login(data.email, data.password);
       console.log("Login successful:", result);
+      reloadUser();
       navigate("/explore");
     } catch (error) {
       console.error("Login failed:", error);
@@ -66,6 +69,7 @@ export default function LoginForm({ onSwitchToRegister }) {
       setVerifyLoading(true);
       const result = await verifyOtp(email, otp);
       console.log('OTP verify success', result);
+      reloadUser();
       navigate('/explore');
     } catch (err) {
       console.error('Verify OTP failed', err);

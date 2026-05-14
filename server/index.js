@@ -8,11 +8,13 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Middleware
 app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:3000"],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],   // ← fixes the 401s
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 }));
+
 app.use(express.json());
 
 // Routes
@@ -27,6 +29,6 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(4000,"0.0.0.0", () => {
+app.listen(4000, "0.0.0.0", () => {
   console.log("Server running on port 4000");
 });
