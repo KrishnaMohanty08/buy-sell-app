@@ -1,5 +1,5 @@
 import express from "express";
-import protect from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 import {
   addToCart,
   getCart,
@@ -11,10 +11,10 @@ import {
 const router = express.Router();
 
 // All cart routes require authentication
-router.post("/add", protect, addToCart);
-router.get("/", protect, getCart);
-router.delete("/:cartItemId", protect, removeFromCart);
-router.patch("/:cartItemId", protect, updateCartItemQuantity);
-router.delete("/", protect, clearCart);
+router.post("/add", authMiddleware, addToCart);
+router.get("/", authMiddleware, getCart);
+router.delete("/:cartItemId", authMiddleware, removeFromCart);
+router.patch("/:cartItemId", authMiddleware, updateCartItemQuantity);
+router.delete("/", authMiddleware, clearCart);
 
 export default router;
