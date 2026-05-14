@@ -26,7 +26,7 @@ function App() {
           <Route path="/explore" element={<ExplorePage />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/buy/:listingId" element={<BuyPage />} />
+            <Route path="/buy" element={<BuyPage />} />
             <Route path="/sell" element={<SellPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
