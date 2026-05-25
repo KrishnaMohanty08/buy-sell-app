@@ -1,269 +1,96 @@
-import prisma from "../prisma/client.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import {
+  validateCreateListing,
+} from "../validation/schemas.js";
+import * as listingService from "../services/listing.service.js";
 
-const CONDITION_MAP = {
-  New: "NEW",
-  "Like New": "LIKE_NEW",
-  Good: "USED",
-  Fair: "USED",
-  "Just Working": "USED",
-  NEW: "NEW",
-  LIKE_NEW: "LIKE_NEW",
-  USED: "USED",
-};
+/**
+ * Create new listing
+ * POST /api/listings
+ * Requires: Authorization header with Bearer token
+ */
+export const createListing = asyncHandler(async (req, res) => {
+  validateCreateListing(req.body);
 
-export const createListing = async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      brand,
-      askingPrice,
-      category,
-      condition,
-      tags,
-      negotiable,
-      stockQuantity,
-      images,
-    } = req.body;
+  const listing = await listingService.createListingService(req.user.id, req.body);
 
-    const sellerId = req.user?.id;
+  res.status(201).json({
+    message: "Listing created successfully",
+    listing,
+  });
+});
 
-    if (!sellerId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+/**
+ * Get listings with filtering and pagination
+ * GET /api/listings
+ * Query params: category, condition, minPrice, maxPrice, search, sortBy, sortOrder, page, limit
+ */
+export const getListings = asyncHandler(async (req, res) => {
+  const result = await listingService.getListingsService(req.query);
+  res.status(200).json(result);
+});
 
-    if (!title || !description || askingPrice === undefined || !category || !condition) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+/**
+ * Get single listing by ID
+ * GET /api/listings/:id
+ */
+export const getListingById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    const mappedCondition = CONDITION_MAP[condition];
-    if (!mappedCondition) {
-      return res.status(400).json({ message: "Invalid condition value" });
-    }
-
-    const price = Number(askingPrice);
-    if (Number.isNaN(price)) {
-      return res.status(400).json({ message: "Invalid price value" });
-    }
-
-    const stock = stockQuantity === undefined ? 1 : Number(stockQuantity);
-    if (!Number.isInteger(stock) || stock < 1) {
-      return res.status(400).json({ message: "Stock quantity must be at least 1" });
-    }
-
-    const listing = await prisma.listing.create({
-      data: {
-        title: String(title).trim(),
-        description: String(description).trim(),
-        brand: typeof brand === "string" && brand.trim() ? brand.trim() : null,
-        price,
-        stock,
-        condition: mappedCondition,
-        negotiable: Boolean(negotiable),
-        tags: Array.isArray(tags)
-          ? tags.map((tag) => (typeof tag === "string" ? tag.trim() : "")).filter(Boolean)
-          : null,
-        seller: {
-          connect: { id: sellerId },
-        },
-        category: {
-          connectOrCreate: {
-            where: { name: String(category).trim() },
-            create: { name: String(category).trim() },
-          },
-        },
-        images: Array.isArray(images)
-          ? {
-              create: images
-                .map((image) => {
-                  if (typeof image === "string") {
-                    return image.trim();
-                  }
-
-                  if (image && typeof image === "object" && typeof image.url === "string") {
-                    return image.url.trim();
-                  }
-
-                  return "";
-                })
-                .filter(Boolean)
-                .map((url) => ({ url }))
-            }
-          : undefined,
-      },
-      include: {
-        category: true,
-        images: true,
-      },
-    });
-
-    return res.status(201).json({
-      message: "Listing created successfully",
-      listing,
-    });
-  } catch (error) {
-    console.error("Create listing failed:", error);
-    return res.status(500).json({ message: error.message || "Failed to create listing" });
+  if (!id) {
+    return res.status(400).json({ message: "Listing ID is required" });
   }
-};
 
-export const getListings = async (req, res) => {
-  try {
-    const {
-      category,
-      condition,
-      minPrice,
-      maxPrice,
-      search,
-      sortBy = "createdAt",
-      sortOrder = "desc",
-      page = 1,
-      limit = 12,
-    } = req.query;
+  const listing = await listingService.getListingByIdService(id);
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const where = { isSold: false, isActive: true, deletedAt: null, stock: { gt: 0 } };
+  // Calculate average rating
+  const avgRating =
+    listing.reviews && listing.reviews.length > 0
+      ? (listing.reviews.reduce((sum, r) => sum + r.rating, 0) / listing.reviews.length).toFixed(1)
+      : 0;
 
-    // Category filter
-    if (category && category !== "All") {
-      where.category = {
-        name: category,
-      };
-    }
+  res.status(200).json({
+    ...listing,
+    avgRating,
+  });
+});
 
-    // Condition filter
-    if (condition) {
-      const conditions = Array.isArray(condition) ? condition : [condition];
-      where.condition = {
-        in: conditions,
-      };
-    }
+/**
+ * Delete listing
+ * DELETE /api/listings/:id
+ * Requires: Authorization header with Bearer token
+ */
+export const deleteListing = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    // Price range filter
-    if (minPrice) {
-      where.price = { ...where.price, gte: Number(minPrice) };
-    }
-    if (maxPrice) {
-      where.price = { ...where.price, lte: Number(maxPrice) };
-    }
-
-    // Search filter (title, description, brand)
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { brand: { contains: search, mode: "insensitive" } },
-      ];
-    }
-
-    // Sorting
-    const orderBy = {};
-    if (sortBy === "price") {
-      orderBy.price = sortOrder;
-    } else if (sortBy === "newest") {
-      orderBy.createdAt = sortOrder;
-    } else {
-      orderBy.createdAt = "desc";
-    }
-
-    const [listings, total] = await Promise.all([
-      prisma.listing.findMany({
-        where,
-        include: {
-          category: true,
-          images: true,
-          seller: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-            },
-          },
-          _count: {
-            select: { reviews: true },
-          },
-        },
-        orderBy,
-        skip,
-        take: Number(limit),
-      }),
-      prisma.listing.count({ where }),
-    ]);
-
-    const totalPages = Math.ceil(total / Number(limit));
-
-    return res.json({
-      listings,
-      pagination: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages,
-      },
-    });
-  } catch (error) {
-    console.error("Get listings failed:", error);
-    return res.status(500).json({ message: error.message || "Failed to fetch listings" });
+  if (!id) {
+    return res.status(400).json({ message: "Listing ID is required" });
   }
-};
 
-export const getListingById = async (req, res) => {
-  try {
-    const { id } = req.params;
+  const deletedListing = await listingService.deleteListingService(id, req.user.id);
 
-    if (!id) {
-      return res.status(400).json({ message: "Listing ID is required" });
-    }
+  res.status(200).json({
+    message: "Listing deleted successfully",
+    listing: deletedListing,
+  });
+});
 
-    const listing = await prisma.listing.findUnique({
-      where: { id },
-      include: {
-        category: true,
-        images: true,
-        seller: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            createdAt: true,
-          },
-        },
-        reviews: {
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        },
-        _count: {
-          select: { reviews: true },
-        },
-      },
-    });
+/**
+ * Update listing
+ * PATCH /api/listings/:id
+ * Requires: Authorization header with Bearer token
+ */
+export const updateListing = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    if (!listing) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-
-    // Calculate average rating
-    const avgRating =
-      listing.reviews.length > 0
-        ? (listing.reviews.reduce((sum, r) => sum + r.rating, 0) / listing.reviews.length).toFixed(1)
-        : 0;
-
-    return res.json({
-      ...listing,
-      avgRating,
-    });
-  } catch (error) {
-    console.error("Get listing by ID failed:", error);
-    return res.status(500).json({ message: error.message || "Failed to fetch listing" });
+  if (!id) {
+    return res.status(400).json({ message: "Listing ID is required" });
   }
-};
+
+  const updatedListing = await listingService.updateListingService(id, req.user.id, req.body);
+
+  res.status(200).json({
+    message: "Listing updated successfully",
+    listing: updatedListing,
+  });
+});

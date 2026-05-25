@@ -1,136 +1,103 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+import api from "./http.js";
 
-// - login() — POST to /api/auth/login, stores token
-// - register() — POST to /api/auth/register, stores token
-// - logout() — Clears token from localStorage
-// - getToken() — Retrieves stored token
-// - isAuthenticated() — Checks if user is logged in
-// - fetchWithAuth() — Helper to automatically attach token to requests
+/**
+ * Serialize user response (remove sensitive fields)
+ */
+const serializeUser = (user) => ({
+  id: user.id,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  email: user.email,
+  profileImage: user.profileImage,
+  listings: user.listings,
+});
 
-export const login =async(email,password)=>{
-    try {
-      const response =await fetch(`${API_BASE_URL}/api/auth/login`,{
-        method :'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({email,password}),
-      });
-      if(!response.ok){
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-      const data = await response.json();
-      // Store token in localStorage
-        if (data.token) {
-            localStorage.setItem('authToken', data.token);
-        }
-        return data;
-    } catch (error) {
-      console.error("Login failed:", error);
-        throw error;
-    }
-}
-
-export const requestOtp = async (email) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/request-otp`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to request OTP');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('requestOtp failed:', error);
-        throw error;
-    }
-}
-
-export const verifyOtp = async (email, otp) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, otp }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'OTP verification failed');
-        }
-        const data = await response.json();
-        if (data.token) {
-            localStorage.setItem('authToken', data.token);
-        }
-        return data;
-    } catch (error) {
-        console.error('verifyOtp failed:', error);
-        throw error;
-    }
-}
-export const register =async(firstName,lastName,email,password)=>{
-    try {
-      const response =await fetch(`${API_BASE_URL}/api/auth/register`,{
-        method :'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({firstName,lastName,email,password}),
-      });
-        if(!response.ok){
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Registration failed');
-        }
-        const data = await response.json();
-        // Store token if provided after registration
-        if (data.token) {
-            localStorage.setItem('authToken', data.token);
-        }
-
-        return data;
-    } catch (error) {
-      console.error("Registration failed:", error);
-      throw error;
-    }   
-}
-
-export const logout=()=>{
-    localStorage.removeItem('authToken');
-}
-
-export const getToken=()=>{
-    return localStorage.getItem('authToken');
-}
-
-export const isAuthenticated=()=>{
-    return !!localStorage.getItem('authToken');
-}
-
-export const fetchWithAuth = async (url, options = {}) => {
-    const token = getToken();
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-    };
-
-    if (token) {
-        headers.Authorization = `Bearer ${token}`;
-    }
-
-    return fetch(url, {
-        ...options,
-        headers
-    });
+/**
+ * Login user with email and password
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @returns {Promise<{token: string, user: object, message: string}>}
+ */
+export const login = async (email, password) => {
+  const data = await api.post("/auth/login", { email, password });
+  if (data.token) {
+    localStorage.setItem("authToken", data.token);
+  }
+  return data;
 };
 
+/**
+ * Register new user
+ * @param {string} firstName - First name
+ * @param {string} lastName - Last name
+ * @param {string} email - Email address
+ * @param {string} password - Password
+ * @returns {Promise<{token: string, user: object, message: string}>}
+ */
+export const register = async (firstName, lastName, email, password) => {
+  const data = await api.post("/auth/register", {
+    firstName,
+    lastName,
+    email,
+    password,
+  });
+  if (data.token) {
+    localStorage.setItem("authToken", data.token);
+  }
+  return data;
+};
+
+/**
+ * Request OTP for password reset
+ * @param {string} email - User email
+ * @returns {Promise<{message: string}>}
+ */
+export const requestOtp = async (email) => {
+  return api.post("/auth/request-otp", { email });
+};
+
+/**
+ * Verify OTP and reset password
+ * @param {string} email - User email
+ * @param {string} otp - OTP code
+ * @returns {Promise<{token: string, user: object, message: string}>}
+ */
+export const verifyOtp = async (email, otp) => {
+  const data = await api.post("/auth/verify-otp", { email, otp });
+  if (data.token) {
+    localStorage.setItem("authToken", data.token);
+  }
+  return data;
+};
+
+/**
+ * Get current authenticated user
+ * @returns {Promise<object>} Current user profile
+ */
 export const getCurrentUser = async () => {
-    try {
-        const response = await fetchWithAuth(`${API_BASE_URL}/api/auth/user`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch user');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Failed to get current user:", error);
-        throw error;
-    }
+  const data = await api.get("/auth/user");
+  return serializeUser(data);
+};
+
+/**
+ * Logout user (clear token)
+ */
+export const logout = () => {
+  localStorage.removeItem("authToken");
+};
+
+/**
+ * Get stored authentication token
+ * @returns {string|null} Token or null
+ */
+export const getToken = () => {
+  return localStorage.getItem("authToken");
+};
+
+/**
+ * Check if user is authenticated
+ * @returns {boolean} True if token exists
+ */
+export const isAuthenticated = () => {
+  return !!localStorage.getItem("authToken");
 };

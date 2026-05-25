@@ -1,17 +1,26 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+import api from "../api/http.js";
 
+/**
+ * Legacy wrapper for API requests
+ * @deprecated Use api from "../api/http.js" directly instead
+ * Kept for backwards compatibility
+ */
 export const apiFetch = async (endpoint, options = {}) => {
-    const token = localStorage.getItem("authToken");
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-            ...options.headers,
-        }
-    });
-    if (!res.ok) {
-        throw new Error("Request failed");
-    }
-    return res.json();
+  const config = {
+    ...options,
+    method: options.method || 'GET',
+  };
+
+  if (options.body) {
+    config.data = typeof options.body === 'string' 
+      ? JSON.parse(options.body) 
+      : options.body;
+  }
+
+  const response = await api({
+    url: endpoint,
+    ...config,
+  });
+
+  return response.data;
 };
