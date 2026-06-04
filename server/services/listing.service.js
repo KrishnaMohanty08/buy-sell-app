@@ -209,7 +209,7 @@ export const getListingsService = async (filters = {}) => {
       total,
       page: Number(page),
       limit: Number(limit),
-      pages: Math.ceil(total / Number(limit)),
+      totalPages: Math.ceil(total / Number(limit)),
     },
   };
 };
