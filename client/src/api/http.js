@@ -46,7 +46,7 @@ api.interceptors.request.use((config) => {
  * Response interceptor: Normalize error handling
  */
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   (error) => {
     const status = error.response?.status;
     const message =

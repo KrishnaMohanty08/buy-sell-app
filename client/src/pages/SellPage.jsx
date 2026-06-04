@@ -33,9 +33,7 @@ const CONDITIONS = [
   { label: "Just Working", icon: Gauge, desc: "working" },
 ];
 
-// Temporary placeholder icons for image previews
-// TODO: Replace with actual image upload and preview handling
-const MOCK_IMAGES = [Camera, Image, Film];
+
 
 // Step-specific validation rules
 const STEP_FIELDS = {
@@ -158,7 +156,7 @@ export default function SellPage() {
               </div>
               <h2 className="success-title">Listing Live!</h2>
               <p className="success-sub">
-                Your item is now live on AURUM. You'll be notified when someone shows interest.
+                Your item is now live on BAZAAR. You'll be notified when someone shows interest.
               </p>
               <div style={{ display: "flex", gap: "0.8rem", justifyContent: "center", flexWrap: "wrap" }}>
                 <button

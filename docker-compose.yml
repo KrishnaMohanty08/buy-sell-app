@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: aurvm_db
+    container_name: bazaar_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: BAZAAR
-      POSTGRES_PASSWORD: aurvm_secret
-      POSTGRES_DB: aurvm_db
+      POSTGRES_PASSWORD: bazaar_secret
+      POSTGRES_DB: bazaar_db
     ports:
       - "5432:5432"
     volumes:
@@ -16,12 +16,12 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: aurvm_server
+    container_name: bazaar_server
     restart: unless-stopped
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgresql://BAZAAR:aurvm_secret@postgres:5432/aurvm_db
+      DATABASE_URL: postgresql://BAZAAR:bazaar_secret@postgres:5432/bazaar_db
       PORT: 4000
     ports:
       - "4000:4000"
@@ -34,7 +34,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: aurvm_client
+    container_name: bazaar_client
     restart: unless-stopped
     depends_on:
       - server

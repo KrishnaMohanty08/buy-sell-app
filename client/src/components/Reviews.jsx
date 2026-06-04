@@ -1,32 +1,17 @@
 import '../styles/globals.css';
 
-const REVIEWS = [
-  {
-    id: 1,
-    name: 'Rhea Kapoor',
-    role: 'Vintage Seller',
-    quote: 'I listed three pieces in under ten minutes and got my first buyer the same evening.',
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: 'Arjun Menon',
-    role: 'Collector',
-    quote: 'The quality filters are top-tier. I finally found authentic collectibles without endless scrolling.',
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: 'Sana Qureshi',
-    role: 'Home Decor Buyer',
-    quote: 'Checkout felt safe, shipping updates were clear, and the item matched the listing perfectly.',
-    rating: 4,
-  },
-];
+
 
 const stars = (count) => '★'.repeat(count) + '☆'.repeat(5 - count);
 
 export default function Reviews() {
+  // TODO: Fetch real community reviews from API
+  const REVIEWS = [];
+  
+  if (REVIEWS.length === 0) {
+    return null; // Hide section when no real reviews are available
+  }
+
   return (
     <section className="home-section home-reviews" aria-labelledby="reviews-title">
       <div className="home-section-head">

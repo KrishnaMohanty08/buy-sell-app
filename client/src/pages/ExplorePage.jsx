@@ -1,53 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Heart, LayoutGrid, List, Search, Loader, ShoppingCart, BadgeCheck, X
+  Heart, LayoutGrid, List, Search, Loader, ShoppingCart, BadgeCheck
 } from "lucide-react";
 import { getListings } from "../api/listing";
 import { isAuthenticated } from "../api/auth";
 import { useCartStore } from "../store/cartStore";
+import { useToastStore } from "../store/toastStore";
 import "../styles/globals.css";
 import "../styles/pageStyles.css";
 
 const CONDITIONS = ["NEW", "LIKE_NEW", "USED"];
 const CONDITION_LABELS = { NEW: "New", LIKE_NEW: "Like New", USED: "Used" };
 
-// ── Toast notification ──────────────────────────────────────────────────────
-function Toast({ toasts, onDismiss }) {
-  return (
-    <div style={{
-      position: "fixed", bottom: "1.5rem", right: "1.5rem",
-      display: "flex", flexDirection: "column", gap: "0.5rem", zIndex: 9999,
-    }}>
-      {toasts.map(t => (
-        <div key={t.id} style={{
-          display: "flex", alignItems: "center", gap: "0.6rem",
-          padding: "0.75rem 1rem",
-          background: t.type === "success" ? "rgba(22,163,74,0.15)" : "rgba(220,38,38,0.15)",
-          border: `1px solid ${t.type === "success" ? "rgb(34,197,94)" : "rgb(220,38,38)"}`,
-          borderRadius: "0.75rem", backdropFilter: "blur(8px)",
-          color: t.type === "success" ? "rgb(134,239,172)" : "rgb(252,165,165)",
-          fontSize: "0.82rem", fontFamily: "'DM Sans', sans-serif",
-          minWidth: "220px", maxWidth: "320px",
-          animation: "slideInRight 0.25s ease",
-        }}>
-          {t.type === "success"
-            ? <BadgeCheck size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
-            : <X size={15} strokeWidth={2} style={{ flexShrink: 0 }} />}
-          <span style={{ flex: 1 }}>{t.message}</span>
-          <button onClick={() => onDismiss(t.id)} style={{
-            background: "none", border: "none", cursor: "pointer",
-            color: "inherit", padding: 0, opacity: 0.6, lineHeight: 1,
-          }}>✕</button>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function ExplorePage() {
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
+  const { success: showSuccess, error: showError } = useToastStore();
 
   // — filter state —
   const [activeConditions, setActiveConditions] = useState([]);
@@ -69,16 +38,6 @@ export default function ExplorePage() {
   const [wished, setWished]             = useState([]);
   const [cartLoading, setCartLoading]   = useState({}); // { [listingId]: bool }
   const [cartAdded, setCartAdded]       = useState({}); // { [listingId]: bool }
-  const [toasts, setToasts]             = useState([]);
-
-  // ── toast helpers ─────────────────────────────────────────────────────────
-  const addToast = useCallback((message, type = "success") => {
-    const id = Date.now();
-    setToasts(p => [...p, { id, message, type }]);
-    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3500);
-  }, []);
-
-  const dismissToast = (id) => setToasts(p => p.filter(t => t.id !== id));
 
   // ── fetch listings ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -140,11 +99,11 @@ export default function ExplorePage() {
     try {
       const result = await addItem(listingId, 1, listing);
       setCartAdded(p => ({ ...p, [listingId]: true }));
-      addToast(result.message || "Added to cart!");
+      showSuccess(result.message || "Added to cart!");
       // Reset the "added" state after 3s so button returns to normal
       setTimeout(() => setCartAdded(p => ({ ...p, [listingId]: false })), 3000);
     } catch (err) {
-      addToast(err.message || "Failed to add to cart", "error");
+      showError(err.message || "Failed to add to cart");
     } finally {
       setCartLoading(p => ({ ...p, [listingId]: false }));
     }
@@ -166,10 +125,6 @@ export default function ExplorePage() {
   return (
     <>
       <style>{`
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(1rem); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
         @keyframes spin {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
@@ -205,8 +160,6 @@ export default function ExplorePage() {
         .page-nums { display: flex; gap: 0.4rem; align-items: center; }
         .page-ellipsis { color: rgba(255,255,255,0.3); font-size: 0.85rem; padding: 0 0.25rem; }
       `}</style>
-
-      <Toast toasts={toasts} onDismiss={dismissToast} />
 
       <div className="explore-page">
         {/* Header */}

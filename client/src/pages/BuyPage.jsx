@@ -24,24 +24,6 @@ import { isAuthenticated } from "../api/auth.js";
 import { useCartStore } from "../store/cartStore.js";
 import { useToastStore } from "../store/toastStore.js";
 
-const REVIEWS = [
-  { name: "Rohan M.", date: "Apr 2026", rating: 5, body: "Absolutely stunning piece. The seller packaged it immaculately and it arrived exactly as described. Highly recommend." },
-  { name: "Priya S.", date: "Mar 2026", rating: 4, body: "Great condition, matches the photos perfectly. Shipping was a bit slow but the item itself is beautiful." },
-  { name: "Aarav K.", date: "Feb 2026", rating: 5, body: "Legit seller. Genuine vintage piece with original box. Worth every rupee." },
-];
-
-const SIMILAR = [
-  { title: "Art Deco Bracelet", price: 12000, emoji: "💎" },
-  { title: "1950s Compass",     price: 4500,  emoji: "🧭" },
-  { title: "Collector's Coin Set", price: 8800, emoji: "🪙" },
-  { title: "Vintage Fountain Pen", price: 3200, emoji: "🖊️" },
-];
-
-const BAR_DATA = [
-  { stars: 5, pct: 72 }, { stars: 4, pct: 18 }, { stars: 3, pct: 6 },
-  { stars: 2, pct: 2  }, { stars: 1, pct: 2  },
-];
-
 const CONDITION_LABELS = { NEW: "New", LIKE_NEW: "Like New", USED: "Used" };
 
 const DEFAULT_PRODUCT = {
@@ -55,7 +37,6 @@ const DEFAULT_PRODUCT = {
 
 export default function BuyPage() {
   const navigate = useNavigate();
-  // ✅ Fix: route is /buy/:id, not :listingId
   const { id: listingId } = useParams();
   const addItem = useCartStore((state) => state.addItem);
   const showSuccess = useToastStore((state) => state.success);
@@ -109,7 +90,6 @@ export default function BuyPage() {
             sales: 0,
             responseTime: "~2 hrs",
           },
-          // ✅ Use real review data from API
           rating:      Number(data.avgRating) || 4.5,
           reviewCount: data._count?.reviews || 0,
           reviews:     data.reviews || [],
@@ -458,7 +438,6 @@ export default function BuyPage() {
 
             {activeTab === "reviews" && (
               <>
-                {/* ✅ Fix: use `product` not the undefined `PRODUCT` */}
                 <div className="review-summary">
                   <div>
                     <div className="review-big-num">{product.rating}</div>
@@ -469,62 +448,40 @@ export default function BuyPage() {
                     </div>
                     <div className="review-big-count">{product.reviewCount} reviews</div>
                   </div>
-                  <div className="review-bars">
-                    {BAR_DATA.map(b => (
-                      <div className="bar-row" key={b.stars}>
-                        <span className="bar-label">{b.stars}★</span>
-                        <div className="bar-track">
-                          <div className="bar-fill" style={{ width: `${b.pct}%` }} />
-                        </div>
-                        <span className="bar-pct">{b.pct}%</span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="review-list">
-                  {/* Show real reviews from API if available, else fallback to mock */}
-                  {(product.reviews?.length > 0 ? product.reviews : REVIEWS).map((r, i) => (
-                    <div className="review-card" key={r.id || i}>
-                      <div className="review-header">
-                        <span className="reviewer-name">
-                          {r.user ? `${r.user.firstName} ${r.user.lastName}` : r.name}
-                        </span>
-                        <span className="reviewer-date">
-                          {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : r.date}
-                        </span>
+                  {product.reviews?.length > 0 ? (
+                    product.reviews.map((r, i) => (
+                      <div className="review-card" key={r.id || i}>
+                        <div className="review-header">
+                          <span className="reviewer-name">
+                            {r.user ? `${r.user.firstName} ${r.user.lastName}` : r.name}
+                          </span>
+                          <span className="reviewer-date">
+                            {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : r.date}
+                          </span>
+                        </div>
+                        <div className="review-stars">
+                          {[1,2,3,4,5].map(s => (
+                            <Star key={s} size={13} strokeWidth={2}
+                              fill={s <= r.rating ? "currentColor" : "none"}
+                              style={{ color: "#F2B949" }}
+                            />
+                          ))}
+                        </div>
+                        <p className="review-body">{r.comment || r.body}</p>
                       </div>
-                      <div className="review-stars">
-                        {[1,2,3,4,5].map(s => (
-                          <Star key={s} size={13} strokeWidth={2}
-                            fill={s <= r.rating ? "currentColor" : "none"}
-                            style={{ color: "#F2B949" }}
-                          />
-                        ))}
-                      </div>
-                      <p className="review-body">{r.comment || r.body}</p>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p style={{ color: "rgba(255,255,255,0.35)", textAlign: "center", padding: "2rem 0" }}>No reviews yet. Be the first to review this item!</p>
+                  )}
                 </div>
               </>
             )}
           </div>
 
-          {/* Similar items */}
-          <div className="similar-section">
-            <h2>You May Also <span>Like</span></h2>
-            <div className="similar-grid">
-              {SIMILAR.map((s, i) => (
-                <div className="sim-card" key={i}>
-                  <div className="sim-img">{s.emoji}</div>
-                  <div className="sim-body">
-                    <div className="sim-title">{s.title}</div>
-                    <div className="sim-price">₹{s.price.toLocaleString()}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </div>
 

@@ -136,6 +136,21 @@ export const getListingsService = async (filters = {}) => {
     limit = 12,
   } = filters;
 
+  // Map user-friendly sort options to database fields
+  const sortByMap = {
+    newest: "createdAt",
+    oldest: "createdAt",
+    price: "price",
+    title: "title",
+    createdAt: "createdAt",
+  };
+
+  // Validate and normalize sortBy
+  const validSortBy = sortByMap[sortBy.toLowerCase()] || "createdAt";
+  
+  // Validate sortOrder
+  const validSortOrder = ["asc", "desc"].includes(sortOrder.toLowerCase()) ? sortOrder.toLowerCase() : "desc";
+
   const skip = (Number(page) - 1) * Number(limit);
   const where = {
     isSold: false,
@@ -183,7 +198,7 @@ export const getListingsService = async (filters = {}) => {
   const listings = await prisma.listing.findMany({
     where,
     include: listingInclude,
-    orderBy: { [sortBy]: sortOrder },
+    orderBy: { [validSortBy]: validSortOrder },
     skip,
     take: Number(limit),
   });
