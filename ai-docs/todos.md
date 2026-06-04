@@ -9,10 +9,10 @@
 ### 📋 Open TODOs
 | File | Line | Type | Description |
 |------|------|------|-------------|
-| SellPage.jsx | 37 | TODO | Replace with actual image upload and preview handling |
+| Reviews.jsx | 8 | TODO | Fetch real community reviews from API |
 | generate-todos.sh | 4 | NOTE | Extracts and tracks TODO/FIXME/HACK/NOTE comments from the codebase |
 | generate-todos.sh | 35 | NOTE | Scan codebase for TODO / FIXME / HACK / NOTE comments |
-| generate-todos.sh | 37 | TODO | TODO_SCAN variable initialization |
+| generate-todos.sh | 37 | TODO | N/A |
 | generate-todos.sh | 46 | NOTE | Regular expression for scanning TODO/FIXME/HACK/NOTE comments |
 | generate-todos.sh | 52 | NOTE | Handling TODO scan output |
 | generate-todos.sh | 54 | NOTE | Grab TODOs from the diff |

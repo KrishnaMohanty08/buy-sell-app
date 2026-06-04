@@ -8,7 +8,7 @@
 
 <!-- AI:START:OVERVIEW -->
 ### 🏛️ Architecture Overview
-The system appears to be a full-stack application with a client and server, utilizing Docker Compose for containerization. The project involves API interactions, document generation, and e-commerce functionality with user authentication, listing management, and cart operations.
+The system appears to be a full-stack e-commerce application with a client and server, utilizing Docker Compose for containerization. The project involves API interactions, user authentication, listing management, cart operations, and order processing.
 <!-- AI:END:OVERVIEW -->
 
 ---
@@ -29,14 +29,14 @@ The project is organized into several directories, including `client` for the fr
 
 <!-- AI:START:FLOW -->
 ### 🔄 Request / Data Flow
-The workflow involves client requests to the server, which handles authentication, routing, and data processing. The flow can be described as: Client → Server → Routes (e.g., authRoutes, listingRoutes, cartRoutes) → Controllers (e.g., authController, listingController) → Services (e.g., Prisma client) → Database.
+The workflow involves client requests to the server, which handles authentication, routing, and data processing. The flow can be described as: Client → Server → Routes (e.g., authRoutes, listingRoutes, cartRoutes) → Controllers (e.g., authController, listingController) → Services (e.g., Prisma client) → Database. For example, a user's request to create a listing would flow through the `SellPage` component in the client, to the `createListing` function in the server's `listingController`, and then to the Prisma client for database operations.
 <!-- AI:END:FLOW -->
 
 ---
 
 <!-- AI:START:SCHEMA -->
 ### 🗃️ Database / Schema Notes
-The database schema includes tables for Address, Listing, Order, User, Cart, CartItem, and Review. The Listing table has columns for title, description, price, condition, sellerId, and createdAt. The User table has columns for firstName, lastName, email, password, and role. The schema also defines enums for PaymentStatus, OrderStatus, Condition, and Role.
+The database schema includes models for Address, Listing, Order, User, Cart, CartItem, and OtpToken. The Listing model has fields for title, description, price, condition, seller, category, images, reviews, and orders. The User model has fields for firstName, lastName, email, password, role, listings, orders, reviews, cart, addresses, and profileImage. The schema also defines relationships between these models, such as a user having many listings and orders, and a listing belonging to one seller.
 <!-- AI:END:SCHEMA -->
 
 ---
