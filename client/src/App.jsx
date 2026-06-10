@@ -13,6 +13,8 @@ import { UserProvider } from './context/UserContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import CartDrawer from './components/cart/CartDrawer'
 import ToastContainer from './components/ui/ToastContainer'
+import CheckoutPage from './pages/CheckoutPage';
+import OrderConfirmationPage from './pages/OrderConfirmationPage';
 
 function App() {
   return (
@@ -45,6 +47,12 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>}
+           />
+          <Route path="/orders/confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
           <Route
             path="/cart"
             element={

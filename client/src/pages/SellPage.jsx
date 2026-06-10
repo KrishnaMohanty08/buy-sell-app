@@ -24,14 +24,19 @@ import "../styles/globals.css";
 import "../styles/pageStyles.css";
 import { createListing } from "../api/sell";
 
+const MOCK_IMAGES = [Image, Camera, Film, Smartphone, Headphones, Lamp, ShoppingBag, Rocket];
 const CATEGORIES = ["Electronics", "Fashion", "Home & Living", "Books", "Sports", "Collectibles", "Automotive", "Music", "Art", "Other"];
 const CONDITIONS = [
   { label: "New", icon: Sparkles, desc: "Never used" },
   { label: "Like New", icon: BadgeDollarSign, desc: "Barely used" },
-  { label: "Good", icon: ThumbsUp, desc: "Minor wear" },
-  { label: "Fair", icon: Wrench, desc: "Visible wear" },
-  { label: "Just Working", icon: Gauge, desc: "working" },
+  { label: "Used", icon: ThumbsUp, desc: "Previously owned" },
 ];
+
+const conditionMap = {
+  "New": "NEW",
+  "Like New": "LIKE_NEW",
+  "Used": "USED",
+};
 
 
 
@@ -128,11 +133,13 @@ export default function SellPage() {
       setSubmitError("");
 
       const payload = {
-        ...data, askingPrice: Number(data.askingPrice),
+        ...data,
+        askingPrice: Number(data.askingPrice),
         originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
         stockQuantity: Number(data.stockQuantity),
         yearOfPurchase: data.yearOfPurchase ? Number(data.yearOfPurchase) : null,
         negotiable: Boolean(data.negotiable),
+        condition: conditionMap[data.condition],
         tags: Array.isArray(data.tags) ? data.tags.filter(Boolean) : [],
         images: Array.isArray(data.images) ? data.images : [],
       };

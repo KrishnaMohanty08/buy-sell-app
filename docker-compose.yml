@@ -19,10 +19,16 @@ services:
     container_name: bazaar_server
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     environment:
       DATABASE_URL: postgresql://BAZAAR:bazaar_secret@postgres:5432/bazaar_db
       PORT: 4000
+      JWT_SECRET: TEsting69
+      MAIL_USER: mohantykrishna57@gmail.com
+      MAIL_APP_PASS: ijkz ntgi venv rdcc
+      RAZORPAY_KEY_ID: rzp_test_SzrIk7SP242iUm
+      RAZORPAY_KEY_SECRET: lOgE6WGSPlbr9KO78arHlvqK
     ports:
       - "4000:4000"
       - "5555:5555"
@@ -37,9 +43,11 @@ services:
     container_name: bazaar_client
     restart: unless-stopped
     depends_on:
-      - server
+      server:
+        condition: service_started
     environment:
       VITE_API_URL: http://localhost:4000
+      VITE_RAZORPAY_KEY_ID: rzp_test_SzrIk7SP242iUm  # ← Add this
     ports:
       - "5173:5173"
     volumes:

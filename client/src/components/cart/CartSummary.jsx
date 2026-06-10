@@ -1,10 +1,13 @@
 import { ArrowRight, Loader2, ShieldCheck, Trash2 } from "lucide-react";
 import { formatCurrency } from "../../utils/cart";
+import { useNavigate } from "react-router-dom";
 
 export default function CartSummary({ totals, onClear, clearLoading = false }) {
   const hasItems = totals.itemCount > 0;
   const canCheckout = totals.checkoutItemCount > 0 && totals.unavailableCount === 0;
-
+  const navigate = useNavigate();
+  console.log('totals:', totals);
+console.log('canCheckout:', canCheckout);
   return (
     <aside className="sticky top-20 rounded-lg border border-gold-400/20 bg-white/[0.04] p-5 backdrop-blur-md">
       <div className="flex items-center justify-between gap-3">
@@ -52,12 +55,11 @@ export default function CartSummary({ totals, onClear, clearLoading = false }) {
       </div>
 
       <button
-        type="button"
-        className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-gold-400 to-orange-500 px-4 text-sm font-semibold text-brown-900 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-gold-400 disabled:cursor-not-allowed disabled:opacity-45"
+        onClick={() => navigate('/checkout')}
         disabled={!canCheckout}
+        className={`mt-5 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition ${canCheckout ? 'bg-gradient-to-r from-gold-400 to-orange-400 text-gray-900 hover:from-gold-500 hover:to-orange-500' : 'bg-gold-400/30 text-white/50 cursor-not-allowed'}`}
       >
         Checkout
-        <ArrowRight className="h-4 w-4" strokeWidth={2} />
       </button>
 
       <div className="mt-4 flex items-center gap-2 text-xs leading-5 text-white/45">

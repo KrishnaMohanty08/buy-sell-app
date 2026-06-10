@@ -5,6 +5,9 @@ import authRoutes from "./routes/auth.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import orderRoutes from "./routes/order.routes.js";
+import addressRoutes from './routes/address.routes.js';
+
 
 const app = express();
 
@@ -21,7 +24,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/cart", cartRoutes);
-
+app.use("/api/orders", orderRoutes);
+app.use('/api/addresses', addressRoutes);
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
