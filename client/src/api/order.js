@@ -1,16 +1,13 @@
 import api from './http.js';
 
-export const createOrder = async (addressId) => {
-  const response = await api.post('/orders/create', { addressId });
-  return response.data;
+export const createOrder = async (address) => {
+  return api.post('/orders/create', { address });
 };
 
 export const verifyPayment = async (data) => {
-  const response = await api.post('/orders/verify', data);
-  return response.data;
+  return api.post('/orders/verify', data);
 };
 
 export const getMyOrders = async () => {
-  const response = await api.get('/orders/mine');
-  return response.data;
+  return api.get('/orders/mine');
 };

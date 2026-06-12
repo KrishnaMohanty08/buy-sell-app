@@ -3,11 +3,13 @@ import AppError from '../utils/AppError.js';
 import * as orderService from '../services/order.service.js';
 
 export const createOrder = asyncHandler(async (req, res) => {
-    const {addressId}=req.body;
-    if(!addressId){
-        throw new AppError("Address ID is required",400);
-    }
-    const result = await orderService.createRazorpayOrder(req.user.id, { addressId });
+  const { address } = req.body;
+
+  if (!address || !address.fullName || !address.phone || !address.street ||
+      !address.city || !address.state || !address.postalCode) {
+    throw new AppError('All address fields are required', 400);
+  }
+  const result = await orderService.createRazorpayOrder(req.user.id, { address });
   res.status(201).json(result);
 });
 
